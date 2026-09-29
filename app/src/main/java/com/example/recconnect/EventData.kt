@@ -16,7 +16,7 @@ data class EventData(
      * Convert a timestamp to a human readable form
      */
     fun readableTime(): String {
-        val dateFormat = SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = this.timestamp
         return dateFormat.format(calendar.time)
