@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                                 })
                             ) { backStackEntry ->
                                 val eventId = backStackEntry.arguments?.getString("eventId")
-                                eventId?.let { Event(it) }
+                                eventId?.let { Event(navController, it) }
                             }
                         }
                     }
