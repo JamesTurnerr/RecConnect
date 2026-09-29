@@ -55,6 +55,10 @@ class MainActivity : ComponentActivity() {
                                 val eventId = backStackEntry.arguments?.getString("eventId")
                                 eventId?.let { Event(navController, it) }
                             }
+
+                            composable("DatabaseTest") {
+                                DatabaseTestScreen(navController = navController)
+                            }
                         }
                     }
                 }
@@ -78,5 +82,10 @@ fun Home(navController: NavController) {
         Button(onClick = { navController.navigate("Event/2") }) {
             Text("Go to Event 2")
         }
+
+        Button(onClick = { navController.navigate("DatabaseTest") }) {
+            Text("Go to database test screen")
+        }
+
     }
 }
