@@ -2,6 +2,7 @@ package com.example.recconnect
 
 import android.app.AlertDialog
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,11 +56,27 @@ fun Event(navController: NavController, eventId: String) {
             text = "Location: ${eventData.location} Time: ${eventData.readableTime()}",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
         )
+
         Text(
-            text = "Attending: ${eventData.attending}",
-            style = MaterialTheme.typography.bodyLarge,
+            text = "Attending:",
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
         )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy((-14).dp)
+        )
+        {
+            for(attendee in eventData.attending.take(3))
+            {
+                Image(
+                    painter = painterResource(id = R.drawable.defaultpfp),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier.size(28.dp).clip(CircleShape)
+                )
+            }
+
+        }
+
         Text(
             text = "Additional Details: ${eventData.additionalDetails}",
             style = MaterialTheme.typography.bodyLarge,

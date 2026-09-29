@@ -9,7 +9,7 @@ data class EventData(
     val title: String,
     val location: String,
     val timestamp: Long,
-    val attending: String, // should eventually change this type from string to profile object
+    val attending: List<Int>, //list of user ID's
     val additionalDetails: String
 ) {
     /**
@@ -31,31 +31,31 @@ data class EventData(
                 EventData(
                     1,
                     "Running",
-                    "Chch",
+                    "Christchurch",
                     1637653200000,
-                    "Bob",
+                    listOf(1, 2),
                     ""
                 ),
                 EventData(2,
                     "Biking",
-                    "Chch",
+                    "Auckland",
                     1637725200000,
-                    "Bob, Dave",
+                    listOf(13434, 2333, 3121, 2323232),
                     "Mountain biking"
                 ),
                 EventData(3,
                     "Bicep day the gym",
-                    "Chch",
+                    "Christchurch",
                     1637811600000,
-                    "Dave, Steve",
+                    listOf(16767, 2222),
                     ""
                 ),
                 EventData(
                     4,
                     "Hiking",
-                    "Chch",
+                    "Christchurch",
                     1637898000000,
-                    "Steve",
+                    listOf(111),
                     ""
                 )
             )
