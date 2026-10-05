@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.auth
@@ -73,6 +74,37 @@ class AuthViewModel : ViewModel() {
                 _uiState.update { it.copy(isLoading = false, error = friendlyMessage(e)) }
             }
         }
+    }
+
+    fun login(email: String, password: String) {
+        val mail = email.trim().lowercase()
+
+        if (mail.isEmpty() || password.isEmpty()) {
+            _uiState.update { it.copy(error = "Enter your email and password") }
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            try {
+                auth.signInWithEmailAndPassword(mail, password).await()
+                _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+            } catch (e: Exception) {
+                val msg = when (e) {
+                    // Same message for wrong email and wrong password, so it doesn't reveal which accounts exist
+                    is FirebaseAuthInvalidUserException,
+                    is FirebaseAuthInvalidCredentialsException -> "Incorrect email or password"
+                    else -> "Couldn't sign in. Check your connection and try again"
+                }
+                _uiState.update { it.copy(isLoading = false, error = msg) }
+            }
+        }
+    }
+
+    // Call this from the Profile screen's logout button
+    fun logout() {
+        auth.signOut()
+        _uiState.update { it.copy(isLoggedIn = false) }
     }
 
     fun clearError() = _uiState.update { it.copy(error = null) }

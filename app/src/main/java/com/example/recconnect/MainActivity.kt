@@ -49,13 +49,18 @@ class MainActivity : ComponentActivity() {
                             composable("Register") {
                                 RegisterScreen(
                                     onRegistered = {
-                                        navController.navigate("Home") {
-                                            popUpTo("Register") { inclusive = true } // back button won't return to sign-up
-                                        }
+                                        navController.navigate("Home") { popUpTo("Register") { inclusive = true } }
                                     },
-                                    onNavigateToLogin = {
-                                        // navController.navigate("Login") once LoginScreen.kt exists
-                                    }
+                                    onNavigateToLogin = { navController.navigate("Login") }   // replaces the commented-out line
+                                )
+                            }
+
+                            composable("Login") {
+                                LoginScreen(
+                                    onLoggedIn = {
+                                        navController.navigate("Home") { popUpTo("Register") { inclusive = true } }
+                                    },
+                                    onNavigateToRegister = { navController.popBackStack() }
                                 )
                             }
                             composable("Home") {
