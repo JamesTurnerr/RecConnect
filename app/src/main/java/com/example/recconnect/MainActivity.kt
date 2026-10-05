@@ -24,6 +24,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recconnect.ui.theme.RecConnectTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +43,21 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        NavHost(navController = navController, startDestination = "Home") {
+                        val startDestination = if (Firebase.auth.currentUser != null) "Home" else "Register"
+
+                        NavHost(navController = navController, startDestination = startDestination) {
+                            composable("Register") {
+                                RegisterScreen(
+                                    onRegistered = {
+                                        navController.navigate("Home") {
+                                            popUpTo("Register") { inclusive = true } // back button won't return to sign-up
+                                        }
+                                    },
+                                    onNavigateToLogin = {
+                                        // navController.navigate("Login") once LoginScreen.kt exists
+                                    }
+                                )
+                            }
                             composable("Home") {
                                 Home(navController = navController)
                             }
