@@ -1,61 +1,62 @@
 package com.example.recconnect
 
 import android.app.AlertDialog
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 
 @Composable
 fun DatabaseTestScreen(navController: NavController) {
     val context = LocalContext.current
+    val databaseTestViewModel: DatabaseTestViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        databaseTestViewModel.loadEvents()
+    }
     Column(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        var nameInput by remember { mutableStateOf("") }
+
         TextField(
-            value = nameInput,
-            onValueChange = { nameInput = it }, // Updates state as user types
+            value = databaseTestViewModel.name,
+            onValueChange = { databaseTestViewModel.updateName(it) },
             label = { Text("Enter name") },
-            placeholder = { Text("John Doe") }
+            placeholder = { Text("Jeremy") }
         )
 
-        var emailInput by remember { mutableStateOf("") }
         TextField(
-            value = emailInput,
-            onValueChange = { emailInput = it }, // Updates state as user types
+            value = databaseTestViewModel.email,
+            onValueChange = { databaseTestViewModel.updateEmail(it) },
             label = { Text("Enter email") },
-            placeholder = { Text("JohnDoe@geemail.com") }
+            placeholder = { Text("PromethiusUltraElitistPrimasMaximus@geemail.com") }
         )
 
 
         Button(//add user
             onClick = {
                 val builder = AlertDialog.Builder(context)
-                if(nameInput == "")
+                if(databaseTestViewModel.name == "")
                 {
                     builder.setMessage("Name input is empty")
                         .setCancelable(false)
                         .setPositiveButton("OK") { dialog, id -> dialog.dismiss()}
                 }
-                else if (emailInput == "")
+                else if (databaseTestViewModel.email == "")
                 {
                     builder.setMessage("Email input is empty")
                         .setCancelable(false)
@@ -63,10 +64,10 @@ fun DatabaseTestScreen(navController: NavController) {
                 }
                 else
                 {
-                    builder.setMessage("Adding name: $nameInput, email: $emailInput")
+                    builder.setMessage("Adding name: ${databaseTestViewModel.name}, email: ${databaseTestViewModel.email}")
                         .setCancelable(false)
                         .setPositiveButton("Add") { dialog, id ->
-                            dbAddUser(nameInput, emailInput)
+                            databaseTestViewModel.createNewAccount()
                         }
                         .setNegativeButton("Cancel") { dialog, id ->
                             dialog.dismiss() // Close the dialog
@@ -80,35 +81,32 @@ fun DatabaseTestScreen(navController: NavController) {
             Text(text = "Add user to database")
         }
 
-        Button(//check email exists
+
+
+        TextField(
+            value = databaseTestViewModel.eventName,
+            onValueChange = { databaseTestViewModel.updateEventName(it) },
+            label = { Text("Enter event name") },
+            placeholder = { Text("Running") }
+        )
+        Button(//add event to database
             onClick = {
                 val builder = AlertDialog.Builder(context)
-                if(nameInput == "")
+                if(databaseTestViewModel.eventName == "")
                 {
                     builder.setMessage("Name input is empty")
                         .setCancelable(false)
                         .setPositiveButton("OK") { dialog, id -> dialog.dismiss()}
                 }
-                else if (emailInput == "")
-                {
-                    builder.setMessage("Email input is empty")
-                        .setCancelable(false)
-                        .setPositiveButton("OK") { dialog, id -> dialog.dismiss()}
-                }
                 else
                 {
-                    if(dbEmailExists(emailInput))
-                    {
-                        builder.setMessage("$emailInput exists")
-                            .setCancelable(false)
-                            .setPositiveButton("OK") { dialog, id -> dialog.dismiss()}
-                    }
-                    else
-                    {
-                        builder.setMessage("$emailInput does not exist")
-                            .setCancelable(false)
-                            .setPositiveButton("OK") { dialog, id -> dialog.dismiss()}
-                    }
+                    builder.setMessage("Creating new event ${databaseTestViewModel.eventName}")
+                        .setCancelable(false)
+                        .setPositiveButton("OK") { dialog, id -> databaseTestViewModel.createNewEvent()
+                        }
+                        .setNegativeButton("Cancel") { dialog, id ->
+                            dialog.dismiss()
+                        }
 
                 }
                 val alert = builder.create()
@@ -116,30 +114,26 @@ fun DatabaseTestScreen(navController: NavController) {
             }
         )
         {
-            Text(text = "Check if email exists in database")
+            Text(text = "Add new event")
         }
+
+
+        Button(
+            onClick = {
+                databaseTestViewModel.loadEvents()
+            }
+        )
+        {
+            Text(text = "Load events")
+        }
+
+        val events  = databaseTestViewModel.allEvents
+        LazyColumn {
+            items(events) { event ->
+                Text(event)
+                HorizontalDivider()
+            }
+        }
+
     }
-}
-
-fun dbAddUser(name: String, email: String)
-{
-    val db = Firebase.firestore
-    val user = hashMapOf(
-        "name" to name,
-        "email" to email
-    )
-
-    db.collection("users")
-        .add(user)
-        .addOnSuccessListener { documentReference ->
-            Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-        }
-        .addOnFailureListener { e ->
-            Log.w(TAG, "Error adding document", e)
-        }
-}
-
-fun dbEmailExists(email: String): Boolean
-{
-    return false//need to implement logic
 }
