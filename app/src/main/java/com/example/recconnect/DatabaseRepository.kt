@@ -1,10 +1,5 @@
 package com.example.recconnect
 
-import android.content.ContentValues.TAG
-import android.util.Log
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-
 /**
  * Interface containing all relevant database functions
  */
@@ -33,7 +28,15 @@ interface DatabaseRepository {
      * Get a list of event ID's of all currently available events
      * @return List of integers of event ID's
      */
-    fun getAllEvents():List<Int>
+    suspend fun getAllEvents():List<String>
+
+    /**
+     * Create a new event
+     * @param name The name of the event
+     * @param location The location of the event
+     * @param timestamp The date/time of the event in timestamp format
+     */
+    fun createEvent(name: String, location: String, timestamp: Long)
 
     /**
      * Add user to an event
