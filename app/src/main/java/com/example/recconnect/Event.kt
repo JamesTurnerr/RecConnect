@@ -1,18 +1,19 @@
 package com.example.recconnect
 
 data class Event(
-    val id: String ,
-    val title: String,
-    val type: String,
-    val location: String,
-    val date: String,
-    val time: String,
-    val description: String,
-    val creatorId: String,
-    val skillLevel: String,
-    val maxSpots: Int,
+    val id: String = "",
+    val title: String = "",
+    val type: String = "",
+    val location: String = "",
+    val date: String = "",
+    val time: String = "",
+    val description: String = "",
+    val creatorId: String = "",
+    val creatorName: String = "",
+    val skillLevel: String = "",
+    val maxSpots: Int = 0,
     val attendeeIds: List<String> = emptyList(),
-    val imageUrl: String
+    val imageUrl: String = ""
 )
 
 data class EventType(val key: String)
