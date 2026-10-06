@@ -3,6 +3,7 @@ package com.example.recconnect
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
@@ -13,29 +14,28 @@ class Firestore : DatabaseRepository {
     var userID = "1";//TODO("Set user ID to actual user id")
 
     override fun createAccount(name: String, email: String): Boolean {
-        val events = ArrayList<Int>()
         val user = hashMapOf(
             "name" to name,
             "email" to email,
-            "events" to events
+            "events" to emptyList<DocumentReference>()
         )
 
         db.collection("users")
             .add(user)
             .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                Log.d(TAG, "User added with ID: ${documentReference.id}")
             }
             .addOnFailureListener { e ->
-                Log.w(TAG, "Error adding document", e)
+                Log.w(TAG, "Error adding user", e)
             }
-        return true//does not yet return true or false on successful account creation
+        return true//TODO: does not yet return true or false on successful account creation
     }
 
     override fun changeAccountName(newName: String) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getJoinedEvents(): List<String> {//new
+    override suspend fun getJoinedEvents(): List<String> {//TODO: just get from user document in db
         return try {
             val eventNames = db.collection("events")
                 .whereArrayContains("attending", userID).get().await()
@@ -76,7 +76,7 @@ class Firestore : DatabaseRepository {
             "creatorName" to "placeholder creator name", //TODO: set this value to the name of the user that creates the event
             "skillLevel" to skillLevel,
             "maxSpots" to maxSpots,
-            "attendeeIds" to listOf("1")//TODO: automatically add the creator user id to this list
+            "attendeeIds" to listOf<DocumentReference>(db.collection("users").document("1"))//TODO: automatically add the creator user id to this list
         )
 
         db.collection("events")
@@ -92,7 +92,7 @@ class Firestore : DatabaseRepository {
     override fun joinEvent(eventID: String) {
         db.collection("events")
             .document(eventID)
-            .update("attending", FieldValue.arrayUnion(userID))
+            .update("attending", FieldValue.arrayUnion(db.collection("users").document(userID)))
             .addOnSuccessListener {
                 Log.d(TAG, "User added to event: $eventID")
             }
@@ -104,7 +104,7 @@ class Firestore : DatabaseRepository {
     override fun leaveEvent(eventID: String) {
         db.collection("events")
             .document(eventID)
-            .update("attending", FieldValue.arrayRemove(userID))
+            .update("attending", FieldValue.arrayRemove(db.collection("users").document(userID)))
             .addOnSuccessListener {
                 Log.d(TAG, "User removed from event: $eventID")
             }
