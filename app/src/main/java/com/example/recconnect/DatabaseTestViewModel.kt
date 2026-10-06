@@ -54,6 +54,24 @@ class DatabaseTestViewModel: ViewModel() {
             }
         }
     }
+    fun outputEventData() {
+        viewModelScope.launch {
+            try {
+                val event = database.getEventById("1")
+                Log.d(TAG, "Event id: ${event.id}")
+                Log.d(TAG, "Event title: ${event.title}")
+                Log.d(TAG, "Event type: ${event.type}")
+                Log.d(TAG, "Event location: ${event.location}")
+                for(a in event.attending)
+                {
+                    Log.d(TAG, "Attending: $a")
+                }
+                Log.d(TAG, "Timestamp: ${event.readableTime()}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Event not found", e)
+            }
+        }
+    }
     fun createNewAccount()
     {
         database.createAccount(name, email)

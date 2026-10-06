@@ -6,6 +6,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
+import kotlin.String
 
 class Firestore : DatabaseRepository {
     val db = Firebase.firestore
@@ -101,14 +102,34 @@ class Firestore : DatabaseRepository {
             }
     }
 
-    override suspend fun getUserById(userID: String): User {
-        val doc = db.collection("users")
+    override suspend fun getUserById(userID: String): UserData {
+        val user = db.collection("users")
             .document(userID).get().await()
 
-        return User(
-            name = doc.getString("name") ?: "",
-            email = doc.getString("email") ?: "",
+        return UserData(
+            name = user.getString("name") ?: "",
+            email = user.getString("email") ?: "",
             events = emptyList()
+        )
+    }
+
+    override suspend fun getEventById(eventID: String): EventData {
+        val event = db.collection("events")
+            .document(eventID).get().await()
+
+        return EventData(
+            id = eventID,
+            title = event.getString("title") ?: "",
+            type = event.getString("type") ?: "",
+            location = event.getString("location") ?: "",
+            timestamp = event.getLong("timestamp") ?: 1637653200000,
+            attending = (event.get("attending") ?: "") as List<String>,
+            description = event.getString("description") ?: "",
+            creatorId = event.getString("creatorId") ?: "",
+            creatorName = event.getString("creatorName") ?: "",
+            skillLevel = event.getString("skillLevel") ?: "",
+            maxSpots = event.getString("maxSpots") ?: "",
+            attendeeIds = (event.get("attendeeIds") ?: "") as List<String>
         )
     }
 }

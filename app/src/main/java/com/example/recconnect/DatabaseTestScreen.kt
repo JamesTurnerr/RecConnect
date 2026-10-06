@@ -144,6 +144,15 @@ fun DatabaseTestScreen(navController: NavController) {
         {
             Text(text = "Console log user data")
         }
+        Button(
+            onClick = {
+                databaseTestViewModel.outputEventData()
+            }
+        )
+        {
+            Text(text = "Console log event data")
+        }
+
 
         val events  = databaseTestViewModel.allEvents
         LazyColumn {

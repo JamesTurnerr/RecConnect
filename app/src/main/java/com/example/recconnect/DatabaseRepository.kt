@@ -53,8 +53,15 @@ interface DatabaseRepository {
     /**
      *  Get a users details from their ID
      *  @param userID The targeted users ID
-     *  @return User class containing user name and email
+     *  @return UserData class containing username,  email and joined events
      */
-    suspend fun getUserById(userID: String): User
+    suspend fun getUserById(userID: String): UserData
+
+    /**
+     *  Get an events details from its ID
+     *  @param eventID The targeted events ID
+     *  @return EventData class containing all event details
+     */
+    suspend fun getEventById(eventID: String): EventData
 
 }
