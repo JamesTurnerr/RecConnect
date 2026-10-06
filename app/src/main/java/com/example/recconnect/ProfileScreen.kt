@@ -20,6 +20,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,13 +35,18 @@ import androidx.navigation.NavController
 @Composable
 fun Profile(
     navController: NavController,
-    userHandle: String,
-    name: String
+    viewModel: ProfileViewModel,
+    userHandle: String
 ) {
+    val profile by viewModel.profile.collectAsState()
+
+    LaunchedEffect(userHandle) {
+        viewModel.loadProfile(userHandle)
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .padding(horizontal = 16.dp)
 
     ) {
@@ -76,7 +84,7 @@ fun Profile(
                     .padding(vertical = 10.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.defaultpfp), // use the real users profile pic
+                    painter = painterResource(id = R.drawable.defaultpfp),
                     contentDescription = "Profile Picture",
                     modifier = Modifier.size(125.dp).clip(CircleShape)
                 )
@@ -87,15 +95,16 @@ fun Profile(
                         .weight(1f)
                 ) {
                     Text(
-                        text = name,
+                        text = profile?.name ?: "Loading...",
                         fontSize = 35.sp
                     )
                     Text(
-                        text = "@ " + userHandle,
+                        text = "@${profile?.userHandle ?: userHandle}",
                         fontSize = 18.sp
                     )
                 }
 
+                //todo only allow the edit option if this is the user logged in
                 IconButton(
                     onClick = {
                         navController.navigate("ProfileEdit")
@@ -118,7 +127,7 @@ fun Profile(
         item {
             Text(
                 text = "activities attending"
-                // fetch these from the database
+                // todo fetch these from the database
                 // for each compose element
                 // create a compose for these or reuses the on for the main page
             )
