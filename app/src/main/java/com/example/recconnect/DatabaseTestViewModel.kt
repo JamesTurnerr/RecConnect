@@ -78,7 +78,7 @@ class DatabaseTestViewModel: ViewModel() {
     }
     fun createNewEvent()
     {
-        database.createEvent(eventName, "Location", 1111111111)//placeholder timestamp
+        database.createEvent(eventName, "EventType", "Location", 1111111111, "A description of the event", "Event skill level", "10")//placeholder timestamp
     }
 
 }

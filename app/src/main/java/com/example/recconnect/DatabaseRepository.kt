@@ -32,11 +32,22 @@ interface DatabaseRepository {
 
     /**
      * Create a new event
-     * @param name The name of the event
+     * @param title The name of the event
+     * @param type The type of event/event category
      * @param location The location of the event
      * @param timestamp The date/time of the event in timestamp format
+     * @param description A description of the event/any additional notes
+     * @param skillLevel The level of skill the event will need
+     * @param maxSpots The maximum amount of users that can attend the event
      */
-    fun createEvent(name: String, location: String, timestamp: Long)
+    fun createEvent(title: String,
+                    type: String,
+                    location: String,
+                    timestamp: Long,
+                    description: String,
+                    skillLevel: String,
+                    maxSpots: String
+    )
 
     /**
      * Add user to an event

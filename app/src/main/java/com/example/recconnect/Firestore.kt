@@ -58,23 +58,34 @@ class Firestore : DatabaseRepository {
         }
     }
 
-    override fun createEvent(name: String, location: String, timestamp: Long) {
-        val attending = ArrayList<Int>()
+    override fun createEvent(title: String,
+                             type: String,
+                             location: String,
+                             timestamp: Long,
+                             description: String,
+                             skillLevel: String,
+                             maxSpots: String
+    ) {
         val event = hashMapOf(
-            "name" to name,
+            "title" to title,
+            "type" to type,
             "location" to location,
             "timestamp" to timestamp,
-            "attending" to attending
-
+            "description" to description,
+            "creatorId" to 1, //TODO: set this value to the ID of the user that creates the event
+            "creatorName" to "placeholder creator name", //TODO: set this value to the name of the user that creates the event
+            "skillLevel" to skillLevel,
+            "maxSpots" to maxSpots,
+            "attendeeIds" to listOf("1")//TODO: automatically add the creator user id to this list
         )
 
         db.collection("events")
             .add(event)
             .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                Log.d(TAG, "Event created with ID: ${documentReference.id}")
             }
             .addOnFailureListener { e ->
-                Log.w(TAG, "Error adding document", e)
+                Log.w(TAG, "Error creating event", e)
             }
     }
 
