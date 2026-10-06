@@ -3,6 +3,7 @@ package com.example.recconnect
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
@@ -35,7 +36,8 @@ class Firestore : DatabaseRepository {
 
     override suspend fun getJoinedEvents(): List<String> {//new
         return try {
-            val eventNames = db.collection("events").whereArrayContains("attending", userID).get().await()
+            val eventNames = db.collection("events")
+                .whereArrayContains("attending", userID).get().await()
             eventNames.documents.mapNotNull { it.id }
         } catch (e: Exception) {
             Log.w(TAG, "Error getting events", e)
@@ -75,11 +77,27 @@ class Firestore : DatabaseRepository {
             }
     }
 
-    override fun joinEvent(eventID: Int) {
-        TODO("Not yet implemented")
+    override fun joinEvent(eventID: String) {
+        db.collection("events")
+            .document(eventID)
+            .update("attending", FieldValue.arrayUnion(userID))
+            .addOnSuccessListener {
+                Log.d(TAG, "User added to event: $eventID")
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error adding user to event", e)
+            }
     }
 
-    override fun leaveEvent(eventID: Int) {
-        TODO("Not yet implemented")
+    override fun leaveEvent(eventID: String) {
+        db.collection("events")
+            .document(eventID)
+            .update("attending", FieldValue.arrayRemove(userID))
+            .addOnSuccessListener {
+                Log.d(TAG, "User removed from event: $eventID")
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error removing user from event", e)
+            }
     }
 }

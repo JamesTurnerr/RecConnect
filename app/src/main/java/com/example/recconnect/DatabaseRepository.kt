@@ -42,12 +42,12 @@ interface DatabaseRepository {
      * Add user to an event
      * @param eventID The ID of the event the user will be added to
      */
-    fun joinEvent(eventID: Int)
+    fun joinEvent(eventID: String)
 
     /**
      * Remove the user from an event
      * @param eventID The ID of the event the user will be removed from
      */
-    fun leaveEvent(eventID: Int)
+    fun leaveEvent(eventID: String)
 
 }

@@ -37,6 +37,10 @@ class DatabaseTestViewModel: ViewModel() {
             allEvents = database.getJoinedEvents()
         }
     }
+    fun addUserToEvent()
+    {
+        database.joinEvent("knPFKfHUS0jg54XHpXyt")
+    }
     fun createNewAccount()
     {
         database.createAccount(name, email)
