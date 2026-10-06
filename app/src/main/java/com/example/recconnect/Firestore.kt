@@ -8,6 +8,8 @@ import kotlinx.coroutines.tasks.await
 
 class Firestore : DatabaseRepository {
     val db = Firebase.firestore
+    var userID = "1";//TODO("Set user ID to actual user id")
+
     override fun createAccount(name: String, email: String): Boolean {
         val events = ArrayList<Int>()
         val user = hashMapOf(
@@ -31,8 +33,14 @@ class Firestore : DatabaseRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getJoinedEvents(): List<Int> {
-        TODO("Not yet implemented")
+    override suspend fun getJoinedEvents(): List<String> {//new
+        return try {
+            val eventNames = db.collection("events").whereArrayContains("attending", userID).get().await()
+            eventNames.documents.mapNotNull { it.id }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error getting events", e)
+            emptyList()
+        }
     }
 
     override suspend fun getAllEvents(): List<String> {

@@ -22,7 +22,7 @@ interface DatabaseRepository {
      * Get a list of event ID's that the user has added themselves to
      * @return List of integers of event ID's
      */
-    fun getJoinedEvents():List<Int>
+    suspend fun getJoinedEvents():List<String>
 
     /**
      * Get a list of event ID's of all currently available events
