@@ -63,11 +63,27 @@ class MainActivity : ComponentActivity() {
                                 DatabaseTestScreen(navController = navController)
                             }
 
-                            composable("Profile") {
-                                Profile(
+                            composable("Profile/{userId}") { backStackEntry ->
+
+                                val userId = backStackEntry.arguments?.getString("userId")
+                                if (userId != null) {
+                                    Profile(
+                                        navController = navController,
+                                        viewModel = profileViewModel,
+                                        userHandle = userId
+                                    )
+                                }
+                            }
+
+                            composable("EditProfile/{userHandle}") { backStackEntry ->
+
+                                val userHandle =
+                                    backStackEntry.arguments?.getString("userHandle") ?: ""
+
+                                EditProfile(
                                     navController = navController,
                                     viewModel = profileViewModel,
-                                    userHandle = "placeholder"  //change to real handle
+                                    userHandle = userHandle
                                 )
                             }
                         }
@@ -80,6 +96,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Home(navController: NavController) {
+    val userid = "ADTT8zkzIMoNxEzMoymU"
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -98,7 +115,7 @@ fun Home(navController: NavController) {
             Text("Go to database test screen")
         }
 
-        Button(onClick = { navController.navigate("Profile")}) {
+        Button(onClick = { navController.navigate("Profile/${userid}")}) {
             Text("go to profile")
         }
 

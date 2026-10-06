@@ -22,7 +22,7 @@ interface DatabaseRepository {
      * Get a list of event ID's that the user has added themselves to
      * @return List of integers of event ID's
      */
-    fun getJoinedEvents():List<Int>
+    suspend fun getJoinedEvents():List<String>
 
     /**
      * Get a list of event ID's of all currently available events
@@ -32,22 +32,47 @@ interface DatabaseRepository {
 
     /**
      * Create a new event
-     * @param name The name of the event
+     * @param title The name of the event
+     * @param type The type of event/event category
      * @param location The location of the event
      * @param timestamp The date/time of the event in timestamp format
+     * @param description A description of the event/any additional notes
+     * @param skillLevel The level of skill the event will need
+     * @param maxSpots The maximum amount of users that can attend the event
      */
-    fun createEvent(name: String, location: String, timestamp: Long)
+    fun createEvent(title: String,
+                    type: String,
+                    location: String,
+                    timestamp: Long,
+                    description: String,
+                    skillLevel: String,
+                    maxSpots: String
+    )
 
     /**
      * Add user to an event
      * @param eventID The ID of the event the user will be added to
      */
-    fun joinEvent(eventID: Int)
+    fun joinEvent(eventID: String)
 
     /**
      * Remove the user from an event
      * @param eventID The ID of the event the user will be removed from
      */
-    fun leaveEvent(eventID: Int)
+    fun leaveEvent(eventID: String)
+
+    /**
+     *  Get a users details from their ID
+     *  @param userID The targeted users ID
+     *  @return UserData class containing username,  email and joined events
+     */
+    suspend fun getUserById(userID: String): UserData
+
+    /**
+     *  Get an events details from its ID
+     *  @param eventID The targeted events ID
+     *  @return EventData class containing all event details
+     */
+    suspend fun getEventById(eventID: String): EventData
 
 }

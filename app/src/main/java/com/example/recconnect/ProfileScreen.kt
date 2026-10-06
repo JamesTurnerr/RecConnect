@@ -1,5 +1,6 @@
 package com.example.recconnect
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -99,22 +100,28 @@ fun Profile(
                         fontSize = 35.sp
                     )
                     Text(
-                        text = "@${profile?.userHandle ?: userHandle}",
+                        text = "@${profile?.email ?: "loading"}",
                         fontSize = 18.sp
                     )
                 }
 
                 //todo only allow the edit option if this is the user logged in
+
+
                 IconButton(
                     onClick = {
-                        navController.navigate("ProfileEdit")
+                        navController.navigate(
+                            "EditProfile/${userHandle}"
+                        )
                     }
                 ) {
-                     Icon(
+                    Icon(
                         imageVector = Icons.Default.ModeEdit,
                         contentDescription = "edit profile"
                     )
                 }
+
+
             }
 
         }

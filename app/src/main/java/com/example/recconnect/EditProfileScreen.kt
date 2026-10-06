@@ -18,6 +18,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -31,19 +33,24 @@ import androidx.compose.runtime.setValue
 @Composable
 fun EditProfile(
     navController: NavController,
-    currentUserHandle: String,
-    currentName: String
+    viewModel: ProfileViewModel,
+    userHandle: String,
 
 
     ){
-    var name by rememberSaveable { mutableStateOf(currentName) }
-    var userHandle by rememberSaveable { mutableStateOf(currentUserHandle) }
+    val profile by viewModel.profile.collectAsState()
+
+    var name by rememberSaveable { mutableStateOf(profile?.name ?: "")}
+    var email by rememberSaveable { mutableStateOf(profile?.email ?: "")}
     var showSaveDialog by rememberSaveable { mutableStateOf(false)}
+
+    LaunchedEffect(profile) {
+        viewModel.loadProfile(userHandle)
+    }
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .padding(horizontal = 16.dp)
 
     ) {
@@ -77,10 +84,10 @@ fun EditProfile(
 
         item {
             OutlinedTextField(
-                value = userHandle,
-                onValueChange = { userHandle = it},
+                value = name,
+                onValueChange = { name = it},
                 label = {
-                    Text("User Handle")
+                    Text("Name")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -91,10 +98,10 @@ fun EditProfile(
 
         item {
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it},
+                value = email,
+                onValueChange = { email = it},
                 label = {
-                    Text("Name")
+                    Text("email")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,10 +138,17 @@ fun EditProfile(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // update the database here
-
-                        showSaveDialog = false
-                        navController.popBackStack()
+                        /*viewModel.updateProfile(
+                            email = email,
+                            name = name,
+                            onSuccess = {
+                                showSaveDialog = false
+                                navController.popBackStack()
+                            },
+                            onError = { exception ->
+                                showSaveDialog = false
+                            }
+                        )*/
                     }
                 ) {
                     Text("Confirm")
