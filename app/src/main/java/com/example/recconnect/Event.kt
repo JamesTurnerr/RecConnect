@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -48,7 +47,7 @@ fun Event(navController: NavController, eventId: String) {
                 modifier = Modifier.size(40.dp).clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = eventData.title, style = MaterialTheme.typography.headlineMedium)
+            Text(text = eventData.title, style = MaterialTheme.typography.headlineMedium, fontSize = 36.sp)
         }
 
         HorizontalDivider(
@@ -58,6 +57,7 @@ fun Event(navController: NavController, eventId: String) {
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
         )
 
+        //Location
         Row(
             modifier = Modifier
         )
@@ -65,27 +65,38 @@ fun Event(navController: NavController, eventId: String) {
             Image(
                 painter = painterResource(id = R.drawable.location_icon),
                 contentDescription = "Location Icon",
-                modifier = Modifier.size(16.dp).clip(CircleShape)
+                modifier = Modifier.size(28.dp).clip(CircleShape)
             )
             Text(
-                text = "${eventData.location} | ",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.clock_icon),
-                contentDescription = "Clock Icon",
-                modifier = Modifier.size(20.dp).clip(CircleShape)
-            )
-            Text(
-                text = eventData.readableTime(),
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                text = eventData.location,
+                fontSize = 28.sp
             )
         }
 
+        Spacer(modifier = Modifier.height(10.dp))
 
+        //Timestamp
+        Row(
+            modifier = Modifier
+        )
+        {
+            Image(
+                painter = painterResource(id = R.drawable.clock_icon),
+                contentDescription = "Clock Icon",
+                modifier = Modifier.size(32.dp).clip(CircleShape)
+            )
+            Text(
+                text = eventData.readableTime(),
+                fontSize = 28.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        //Attendees
         Text(
             text = "Attending:",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
         )
         Row(
@@ -103,11 +114,17 @@ fun Event(navController: NavController, eventId: String) {
 
         }
 
-        Text(
-            text = "Additional Details: ${eventData.description}",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
-        )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        //Description
+        if(eventData.description != "")
+        {
+            Text(
+                text = "Description:\n${eventData.description}",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
+            )
+        }
 
         /*
         Dialog box when user clicks join event
@@ -125,6 +142,7 @@ fun Event(navController: NavController, eventId: String) {
                 builder.setMessage("Are you sure you want to join ${eventData.title}?")
                     .setCancelable(false)
                     .setPositiveButton("Ok") { dialog, id ->
+
                         joinEvent(
                             navController,
                             eventData.id
