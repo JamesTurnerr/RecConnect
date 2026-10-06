@@ -100,4 +100,15 @@ class Firestore : DatabaseRepository {
                 Log.w(TAG, "Error removing user from event", e)
             }
     }
+
+    override suspend fun getUserById(userID: String): User {
+        val doc = db.collection("users")
+            .document(userID).get().await()
+
+        return User(
+            name = doc.getString("name") ?: "",
+            email = doc.getString("email") ?: "",
+            events = emptyList()
+        )
+    }
 }

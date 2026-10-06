@@ -50,4 +50,11 @@ interface DatabaseRepository {
      */
     fun leaveEvent(eventID: String)
 
+    /**
+     *  Get a users details from their ID
+     *  @param userID The targeted users ID
+     *  @return User class containing user name and email
+     */
+    suspend fun getUserById(userID: String): User
+
 }
