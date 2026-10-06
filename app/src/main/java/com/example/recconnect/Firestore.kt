@@ -31,11 +31,24 @@ class Firestore : DatabaseRepository {
         return true//TODO: does not yet return true or false on successful account creation
     }
 
-    override fun changeAccountName(newName: String) {
-        db.collection("users").document(userID)
-            .update("name", newName)
-            .addOnSuccessListener { Log.d(TAG, "Users name updated to $newName") }
-            .addOnFailureListener { e -> Log.w(TAG, "Users name did not update", e) }
+    override fun changeAccountDetails(newName: String?, newEmail: String?) {
+        val newDetails = mutableMapOf<String, Any>()
+        if(!newName.isNullOrBlank())
+        {
+            newDetails["name"] = newName
+        }
+        if(!newEmail.isNullOrBlank())
+        {
+            newDetails["email"] = newEmail
+        }
+        if(!newDetails.isEmpty())
+        {
+            db.collection("users").document(userID)
+                .update(newDetails)
+                .addOnSuccessListener { Log.d(TAG, "Users details updated to $newDetails") }
+                .addOnFailureListener { e -> Log.w(TAG, "Users details update failed", e) }
+        }
+
     }
 
     override suspend fun getJoinedEvents(): List<String> {//TODO: just get from user document in db

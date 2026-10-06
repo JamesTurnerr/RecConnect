@@ -82,7 +82,7 @@ class DatabaseTestViewModel: ViewModel() {
     }
     fun changeAccountName(userID: String, newName: String)
     {
-        database.changeAccountName(newName)
+        database.changeAccountDetails(newName = "newAccountName")
     }
 
 }

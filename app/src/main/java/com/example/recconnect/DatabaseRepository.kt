@@ -16,7 +16,7 @@ interface DatabaseRepository {
      * Change the users name
      * @param newName The new name the user chooses
      */
-    fun changeAccountName(newName: String)
+    fun changeAccountDetails(newName: String? = null, newEmail: String? = null)
 
     /**
      * Get a list of event ID's that the user has added themselves to
