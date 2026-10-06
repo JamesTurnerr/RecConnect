@@ -127,6 +127,15 @@ fun DatabaseTestScreen(navController: NavController) {
             Text(text = "Load events")
         }
 
+        Button(
+            onClick = {
+                databaseTestViewModel.addUserToEvent()
+            }
+        )
+        {
+            Text(text = "Add user '1' to event 'knPFKfHUS0jg54XHpXyt'")
+        }
+
         val events  = databaseTestViewModel.allEvents
         LazyColumn {
             items(events) { event ->

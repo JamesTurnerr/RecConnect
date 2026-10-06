@@ -22,7 +22,7 @@ interface DatabaseRepository {
      * Get a list of event ID's that the user has added themselves to
      * @return List of integers of event ID's
      */
-    fun getJoinedEvents():List<Int>
+    suspend fun getJoinedEvents():List<String>
 
     /**
      * Get a list of event ID's of all currently available events
@@ -42,12 +42,12 @@ interface DatabaseRepository {
      * Add user to an event
      * @param eventID The ID of the event the user will be added to
      */
-    fun joinEvent(eventID: Int)
+    fun joinEvent(eventID: String)
 
     /**
      * Remove the user from an event
      * @param eventID The ID of the event the user will be removed from
      */
-    fun leaveEvent(eventID: Int)
+    fun leaveEvent(eventID: String)
 
 }
