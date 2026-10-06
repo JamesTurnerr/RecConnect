@@ -32,7 +32,10 @@ class Firestore : DatabaseRepository {
     }
 
     override fun changeAccountName(newName: String) {
-        TODO("Not yet implemented")
+        db.collection("users").document(userID)
+            .update("name", newName)
+            .addOnSuccessListener { Log.d(TAG, "Users name updated to $newName") }
+            .addOnFailureListener { e -> Log.w(TAG, "Users name did not update", e) }
     }
 
     override suspend fun getJoinedEvents(): List<String> {//TODO: just get from user document in db

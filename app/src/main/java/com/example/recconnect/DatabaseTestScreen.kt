@@ -152,6 +152,17 @@ fun DatabaseTestScreen(navController: NavController) {
         {
             Text(text = "Console log event data")
         }
+        Button(
+            onClick = {
+                databaseTestViewModel.changeAccountName("1", "testAccount0")
+            }
+        )
+        {
+            Text(text = "Change user '1's name")
+        }
+
+
+
 
 
         val events  = databaseTestViewModel.allEvents
