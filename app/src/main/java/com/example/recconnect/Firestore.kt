@@ -123,7 +123,7 @@ class Firestore : DatabaseRepository {
         //Add user to event attending list
         db.collection("events")
             .document(eventID)
-            .update("attending", FieldValue.arrayUnion(db.collection("users").document(deviceUserID)))
+            .update("attendeeIds", FieldValue.arrayUnion(db.collection("users").document(deviceUserID)))
             .addOnSuccessListener {
                 Log.d(TAG, "User added to event: $eventID")
             }
@@ -189,7 +189,7 @@ class Firestore : DatabaseRepository {
             creatorUser = event.getString("creatorUser") ?: "",
             skillLevel = event.getString("skillLevel") ?: "",
             maxSpots = event.getString("maxSpots") ?: "",
-            attendeeIds = (event.get("attendeeIds") ?: emptyList<String>()) as List<String>
+            attendeeIds = (event.get("attendeeIds") as? List<*>)?.mapNotNull { it?.toString() } ?: emptyList()
         )
     }
 }
