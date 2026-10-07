@@ -25,6 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recconnect.ui.theme.RecConnectTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
     private val profileViewModel: ProfileViewModel by viewModels()
@@ -44,7 +46,26 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        NavHost(navController = navController, startDestination = "Home") {
+                        val startDestination = if (Firebase.auth.currentUser != null) "Home" else "Register"
+
+                        NavHost(navController = navController, startDestination = startDestination) {
+                            composable("Register") {
+                                RegisterScreen(
+                                    onRegistered = {
+                                        navController.navigate("Home") { popUpTo("Register") { inclusive = true } }
+                                    },
+                                    onNavigateToLogin = { navController.navigate("Login") }   // replaces the commented-out line
+                                )
+                            }
+
+                            composable("Login") {
+                                LoginScreen(
+                                    onLoggedIn = {
+                                        navController.navigate("Home") { popUpTo("Register") { inclusive = true } }
+                                    },
+                                    onNavigateToRegister = { navController.popBackStack() }
+                                )
+                            }
                             composable("Home") {
                                 Home(navController = navController)
                             }

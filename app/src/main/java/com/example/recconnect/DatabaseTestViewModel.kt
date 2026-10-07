@@ -80,5 +80,9 @@ class DatabaseTestViewModel: ViewModel() {
     {
         database.createEvent(eventName, "EventType", "Location", 1111111111, "A description of the event", "Event skill level", "10")//placeholder timestamp
     }
+    fun changeAccountName(userID: String, newName: String)
+    {
+        database.changeAccountName(newName)
+    }
 
 }
