@@ -2,6 +2,7 @@ package com.example.recconnect
 
 import android.app.AlertDialog
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -125,15 +126,25 @@ fun DatabaseTestScreen(navController: NavController) {
         {
             Text(text = "Console log events")
         }
-
-        Button(
-            onClick = {
-                databaseTestViewModel.addUserToEvent()
-            }
-        )
+        Row()
         {
-            Text(text = "Add user '1' to event 'knPFKfHUS0jg54XHpXyt'")
+            Button(
+                onClick = {
+                    databaseTestViewModel.addUserToEvent()
+                }
+            )
+            {
+                Text(text = "AAdd self to event")
+            }
+            TextField(
+                value = databaseTestViewModel.eventIDinput,
+                onValueChange = { databaseTestViewModel.updateEventIDinput(it) },
+                label = { Text("Enter event ID") },
+                placeholder = { Text("Enter event ID") }
+            )
+
         }
+
 
         Button(
             onClick = {

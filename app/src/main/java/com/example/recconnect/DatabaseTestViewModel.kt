@@ -7,15 +7,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 class DatabaseTestViewModel: ViewModel() {
     val database : DatabaseRepository = Firestore()
+    var deviceUserID = Firebase.auth.currentUser?.uid ?: "1"//default to userID: 1
     var name by mutableStateOf("")
         private set
 
     fun updateName(newName: String) {
         name = newName
+    }
+
+    var eventIDinput by mutableStateOf("")
+        private set
+
+    fun updateEventIDinput(newEventIDinput: String) {
+        eventIDinput = newEventIDinput
     }
 
     var email by mutableStateOf("")
@@ -44,12 +54,12 @@ class DatabaseTestViewModel: ViewModel() {
     }
     fun addUserToEvent()
     {
-        database.joinEvent("knPFKfHUS0jg54XHpXyt")//existing event id
+        database.joinEvent(eventIDinput)//existing event id
     }
     fun outputUserData() {
         viewModelScope.launch {
             try {
-                val user = database.getUserById("zDsiLACuUloJMMy4wMt2")
+                val user = database.getUserById(deviceUserID)
                 Log.d(TAG, "User email: ${user.email}")
                 Log.d(TAG, "User name: ${user.name}")
             } catch (e: Exception) {
