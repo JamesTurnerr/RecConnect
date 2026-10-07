@@ -138,7 +138,10 @@ fun EventCard(navController: NavController, eventId: String) {
 
                         AlertDialog.Builder(context)
                             .setTitle(attendeesString)
-                            .setItems(names.toTypedArray(), null)
+                            .setItems(names.toTypedArray()) { _, which ->
+                                val userId = eventData.attendeeIds[which]
+                                navController.navigate("Profile/$userId")
+                            }
                             .setPositiveButton(closeString) { dialog, _ -> dialog.dismiss() }
                             .show()
                     }
