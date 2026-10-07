@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,12 +28,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
 @Composable
-fun Event(navController: NavController, eventId: String) {
-    val eventData: EventData = EventData.getEvents().first { eventData -> eventData.id == eventId }
+fun EventCard(navController: NavController, eventId: String) {
+    val eventCardViewModel: EventCardViewModel = viewModel(key = eventId) { EventCardViewModel(eventId) }
+    val loadedEvent by eventCardViewModel.eventDetails.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    val eventData = loadedEvent
+    if (eventData == null) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -143,10 +157,7 @@ fun Event(navController: NavController, eventId: String) {
                     .setCancelable(false)
                     .setPositiveButton("Ok") { dialog, id ->
 
-                        joinEvent(
-                            navController,
-                            eventData.id
-                        )
+                        eventCardViewModel.joinEvent(navController, eventData.id)
                     }
                     .setNegativeButton("Cancel") { dialog, id ->
                         dialog.dismiss() // Close the dialog
@@ -163,13 +174,4 @@ fun Event(navController: NavController, eventId: String) {
             }
         }
     }
-}
-
-fun joinEvent(navController: NavController, eventID: String)
-{
-    //TODO: add user to event
-    //...
-
-
-    navController.navigate("Home")
 }
