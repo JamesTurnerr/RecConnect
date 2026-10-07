@@ -145,6 +145,7 @@ class Firestore : DatabaseRepository {
             .document(userID).get().await()
 
         return UserData(
+            id = userID,
             name = user.getString("name") ?: "",
             email = user.getString("email") ?: "",
             events = emptyList()
