@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -34,5 +37,11 @@ class EventCardViewModel(eventID: String): ViewModel() {
         database.joinEvent(eventID)
 
         navController.navigate("Home")
+    }
+
+    suspend fun getAttendeesById(attendeeList: List<String>): List<String> = coroutineScope {
+        attendeeList
+            .map { id -> async { database.getUserById(id).name } }
+            .awaitAll()
     }
 }

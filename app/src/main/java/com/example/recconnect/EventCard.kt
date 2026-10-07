@@ -2,6 +2,7 @@ package com.example.recconnect
 
 import android.app.AlertDialog
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -21,23 +23,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 
 @Composable
 fun EventCard(navController: NavController, eventId: String) {
     val eventCardViewModel: EventCardViewModel = viewModel(key = eventId) { EventCardViewModel(eventId) }
     val loadedEvent by eventCardViewModel.eventDetails.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val eventData = loadedEvent
     if (eventData == null) {
@@ -109,13 +115,30 @@ fun EventCard(navController: NavController, eventId: String) {
         Spacer(modifier = Modifier.height(10.dp))
 
         //Attendees
+        val attendeesString = stringResource(R.string.attendees)
+        val closeString = stringResource(R.string.close)
         Text(
             text = stringResource(R.string.attending),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy((-14).dp)
+            horizontalArrangement = Arrangement.spacedBy((-14).dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .clickable(enabled = eventData.attendeeIds.isNotEmpty()) {
+                    scope.launch {
+                        val names = eventCardViewModel.getAttendeesById(eventData.attendeeIds)
+
+                        AlertDialog.Builder(context)
+                            .setTitle(attendeesString)
+                            .setItems(names.toTypedArray(), null)
+                            .setPositiveButton(closeString) { dialog, _ -> dialog.dismiss() }
+                            .show()
+                    }
+                }
+                .padding(4.dp)
         )
         {
             for(attendee in eventData.attendeeIds.take(3))
@@ -124,6 +147,16 @@ fun EventCard(navController: NavController, eventId: String) {
                     painter = painterResource(id = R.drawable.defaultpfp),
                     contentDescription = "Profile Picture",
                     modifier = Modifier.size(28.dp).clip(CircleShape)
+                )
+            }
+
+            if(eventData.attendeeIds.size > 3)
+            {
+                Spacer(Modifier.width(30.dp))
+                Text(
+                    text = pluralStringResource(R.plurals.others_attending, eventData.attendeeIds.size - 3, eventData.attendeeIds.size - 3),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
                 )
             }
 

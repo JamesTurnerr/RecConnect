@@ -6,4 +6,11 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="join_event_confirmation">Are you sure you want to join %1$s?</string>
+    <string name="attendees">Attendees</string>
+    <string name="close">Close</string>
+
+    <plurals name="others_attending">
+        <item quantity="one">+%d other</item>
+        <item quantity="other">+%d others</item>
+    </plurals>
 </resources>

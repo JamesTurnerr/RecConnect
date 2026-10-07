@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
@@ -13,6 +14,22 @@ import kotlin.String
 class Firestore : DatabaseRepository {
     val db = Firebase.firestore
     var deviceUserID = Firebase.auth.currentUser?.uid ?: "1"//default to userID: 1
+
+    private fun DocumentSnapshot.toEventData(): EventData = EventData(
+        id = id,
+        title = getString("title") ?: "",
+        type = getString("type") ?: "",
+        location = getString("location") ?: "",
+        timestamp = getLong("timestamp") ?: 11111111111L,
+        description = getString("description") ?: "",
+        creatorUser = getString("creatorUser") ?: "",
+        skillLevel = getString("skillLevel") ?: "",
+        maxSpots = getString("maxSpots") ?: "",
+        attendeeIds = (get("attendeeIds") as? List<*>)
+            ?.filterIsInstance<DocumentReference>()
+            ?.map { it.id }
+            ?: emptyList()
+    )
 
     override fun createAccount(name: String, email: String): Boolean {
         val user = hashMapOf(
@@ -66,20 +83,7 @@ class Firestore : DatabaseRepository {
     override suspend fun getAllEvents(): List<EventData> {
         return try {
             val allEvents = db.collection("events").get().await()
-            allEvents.documents.mapNotNull { event ->
-                EventData(
-                    id = event.id,
-                    title = event.getString("title") ?: "",
-                    type = event.getString("type") ?: "",
-                    location = event.getString("location") ?: "",
-                    timestamp = event.getLong("timestamp") ?: 11111111111L,
-                    description = event.getString("description") ?: "",
-                    creatorUser = event.getString("creatorUser") ?: "",
-                    skillLevel = event.getString("skillLevel") ?: "",
-                    maxSpots = event.getString("maxSpots") ?: "",
-                    attendeeIds = (event.get("attendeeIds") ?: emptyList<String>()) as List<String>
-                )
-            }
+            allEvents.documents.map { it.toEventData() }
         } catch (e: Exception) {
             Log.w(TAG, "Error getting events", e)
             emptyList()
@@ -145,7 +149,7 @@ class Firestore : DatabaseRepository {
     override fun leaveEvent(eventID: String) {
         db.collection("events")
             .document(eventID)
-            .update("attending", FieldValue.arrayRemove(db.collection("users").document(deviceUserID)))
+            .update("attendeeIds", FieldValue.arrayRemove(db.collection("users").document(deviceUserID)))
             .addOnSuccessListener {
                 Log.d(TAG, "User removed from event: $eventID")
             }
@@ -177,19 +181,7 @@ class Firestore : DatabaseRepository {
 
     override suspend fun getEventById(eventID: String): EventData {
         val event = db.collection("events")
-            .document(eventID).get().await()
-
-        return EventData(
-            id = event.id,
-            title = event.getString("title") ?: "",
-            type = event.getString("type") ?: "",
-            location = event.getString("location") ?: "",
-            timestamp = event.getLong("timestamp") ?: 11111111111L,
-            description = event.getString("description") ?: "",
-            creatorUser = event.getString("creatorUser") ?: "",
-            skillLevel = event.getString("skillLevel") ?: "",
-            maxSpots = event.getString("maxSpots") ?: "",
-            attendeeIds = (event.get("attendeeIds") as? List<*>)?.mapNotNull { it?.toString() } ?: emptyList()
-        )
+            .document(eventID).get().await().toEventData()
+        return event
     }
 }
