@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
+    private val profileViewModel: ProfileViewModel by viewModels()
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +83,30 @@ class MainActivity : ComponentActivity() {
                             composable("DatabaseTest") {
                                 DatabaseTestScreen(navController = navController)
                             }
+
+                            composable("Profile/{userId}") { backStackEntry ->
+
+                                val userId = backStackEntry.arguments?.getString("userId")
+                                if (userId != null) {
+                                    Profile(
+                                        navController = navController,
+                                        viewModel = profileViewModel,
+                                        userHandle = userId
+                                    )
+                                }
+                            }
+
+                            composable("EditProfile/{userHandle}") { backStackEntry ->
+
+                                val userHandle =
+                                    backStackEntry.arguments?.getString("userHandle") ?: ""
+
+                                EditProfile(
+                                    navController = navController,
+                                    viewModel = profileViewModel,
+                                    userHandle = userHandle
+                                )
+                            }
                         }
                     }
                 }
@@ -106,6 +133,14 @@ fun Home(navController: NavController) {
 
         Button(onClick = { navController.navigate("DatabaseTest") }) {
             Text("Go to database test screen")
+        }
+
+        Button(onClick = { navController.navigate("Profile/${Firebase.auth.currentUser?.uid}")}) {
+            Text("go to profile")
+        }
+
+        Button(onClick = { navController.navigate("Profile/${"zDsiLACuUloJMMy4wMt2"}")}) {
+            Text("test profile not logged into")
         }
 
     }
