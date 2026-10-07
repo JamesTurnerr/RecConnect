@@ -183,37 +183,76 @@ fun EventCard(navController: NavController, eventId: String) {
         }
 
         /*
-        Dialog box when user clicks join event
+        Dialog box when user clicks join/leave event
         Add to event then redirect to home screen on accept
          */
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
-        )
+        //leave event
+        if(eventData.attendeeIds.contains(eventCardViewModel.deviceUserID))
         {
-            val confirmationMessage = stringResource(R.string.join_event_confirmation, eventData.title)
-            Button(
-                modifier = Modifier.width(200.dp).height(67.dp),
-                onClick = {
-                val builder = AlertDialog.Builder(context)
-                builder.setMessage(confirmationMessage)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.ok) { dialog, id ->
-
-                        eventCardViewModel.joinEvent(navController, eventData.id)
-                    }
-                    .setNegativeButton(R.string.cancel) { dialog, id ->
-                        dialog.dismiss() // Close the dialog
-                    }
-                val alert = builder.create()
-                alert.show()
-                }
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
             )
             {
-                Text(
-                    text = stringResource(R.string.join_event),
-                    fontSize = 24.sp
+                val confirmationMessage =
+                    stringResource(R.string.leave_event_confirmation, eventData.title)
+                Button(
+                    modifier = Modifier.width(200.dp).height(67.dp),
+                    onClick = {
+                        val builder = AlertDialog.Builder(context)
+                        builder.setMessage(confirmationMessage)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.ok) { dialog, id ->
+
+                                eventCardViewModel.leaveEvent(navController, eventData.id)
+                            }
+                            .setNegativeButton(R.string.cancel) { dialog, id ->
+                                dialog.dismiss() // Close the dialog
+                            }
+                        val alert = builder.create()
+                        alert.show()
+                    }
                 )
+                {
+                    Text(
+                        text = stringResource(R.string.leave_event),
+                        fontSize = 24.sp
+                    )
+                }
+            }
+        }
+        //join event
+        else {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
+            )
+            {
+                val confirmationMessage =
+                    stringResource(R.string.join_event_confirmation, eventData.title)
+                Button(
+                    modifier = Modifier.width(200.dp).height(67.dp),
+                    onClick = {
+                        val builder = AlertDialog.Builder(context)
+                        builder.setMessage(confirmationMessage)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.ok) { dialog, id ->
+
+                                eventCardViewModel.joinEvent(navController, eventData.id)
+                            }
+                            .setNegativeButton(R.string.cancel) { dialog, id ->
+                                dialog.dismiss() // Close the dialog
+                            }
+                        val alert = builder.create()
+                        alert.show()
+                    }
+                )
+                {
+                    Text(
+                        text = stringResource(R.string.join_event),
+                        fontSize = 24.sp
+                    )
+                }
             }
         }
     }

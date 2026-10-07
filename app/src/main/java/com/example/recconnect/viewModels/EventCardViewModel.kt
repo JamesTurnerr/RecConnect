@@ -42,6 +42,14 @@ class EventCardViewModel(eventID: String): ViewModel() {
         navController.navigate("Home")
     }
 
+    fun leaveEvent(navController: NavController, eventID: String)
+    {
+
+        database.leaveEvent(eventID)
+
+        navController.navigate("Home")
+    }
+
     suspend fun getAttendeesById(attendeeList: List<String>): List<String> = coroutineScope {
         attendeeList
             .map { id -> async { database.getUserById(id).name } }
