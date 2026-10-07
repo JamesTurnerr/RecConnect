@@ -36,6 +36,21 @@ class Firestore : DatabaseRepository {
             ?: emptyList()
     )
 
+    private fun DocumentSnapshot.getReferenceIds(field: String): List<String> =
+        (get(field) as? List<*>)
+            ?.filterIsInstance<DocumentReference>()
+            ?.map { it.id }
+            ?: emptyList()
+
+    private fun DocumentSnapshot.toUserData(): UserData = UserData(
+        id = id,
+        name = getString("name") ?: "",
+        email = getString("email") ?: "",
+        events = getReferenceIds("events")
+    )
+
+
+
     override fun createAccount(name: String, email: String): Boolean {
         val user = hashMapOf(
             "name" to name,
@@ -66,6 +81,7 @@ class Firestore : DatabaseRepository {
         }
         if(newDetails.isEmpty())
         {
+            Log.w(TAG, "Error new details not entered")
             return
         }
         db.collection("users").document(uid).update(newDetails).await()
@@ -75,14 +91,7 @@ class Firestore : DatabaseRepository {
     }
 
     override suspend fun getJoinedEventIDs(userID: String): List<String> {
-        return try {
-            val eventIDs = db.collection("users").document(userID)
-                .get().await()
-            (eventIDs.get("events") as? List<DocumentReference>)?.map {it.id} ?: emptyList()
-        } catch (e: Exception) {
-            Log.w(TAG, "Error getting IDs", e)
-            emptyList()
-        }
+        return getUserById(userID).events
     }
 
     override suspend fun getAllEvents(): List<EventData> {
@@ -153,15 +162,16 @@ class Firestore : DatabaseRepository {
     }
 
     override suspend fun getUserById(userID: String): UserData {
-        val user = db.collection("users")
-            .document(userID).get().await()
+        val user = db.collection("users").document(userID).get().await()
+        if (user.exists())
+        {
+            return user.toUserData()
+        }
+        else
+        {
+            throw NoSuchElementException("$userID user not found")
+        }
 
-        return UserData(
-            id = userID,
-            name = user.getString("name") ?: "",
-            email = user.getString("email") ?: "",
-            events = emptyList()
-        )
     }
 
     override suspend fun getEventById(eventID: String): EventData {
