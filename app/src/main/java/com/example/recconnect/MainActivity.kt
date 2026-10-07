@@ -123,7 +123,7 @@ fun Home(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Homepage/Navigation Testing")
+        Text("Homepage/Navigation Testing\nUser ID: ${Firebase.auth.currentUser?.uid}")
 
         Button(onClick = { navController.navigate("Event/1") }) {
             Text("Go to Event 1")
