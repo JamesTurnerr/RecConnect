@@ -167,11 +167,13 @@ class Firestore : DatabaseRepository {
         val user = db.collection("users")
             .document(userID).get().await()
 
+        val events = user.get("events") as? List<DocumentReference>?: emptyList()
+
         return UserData(
             id = userID,
             name = user.getString("name") ?: "",
             email = user.getString("email") ?: "",
-            events = emptyList()
+            events = events
         )
     }
 
