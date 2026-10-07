@@ -32,11 +32,14 @@ class DatabaseTestViewModel: ViewModel() {
         eventName = newEventName
     }
 
-    var allEvents by mutableStateOf<List<EventData>>(emptyList())
-        private set
     fun loadEvents() {
         viewModelScope.launch {
-            allEvents = database.getAllEvents()
+            val allEvents = database.getAllEvents()
+            for(event in allEvents)
+            {
+                Log.d(TAG, "Event ID: ${event.id}")
+                Log.d(TAG, "Event title: ${event.title}")
+            }
         }
     }
     fun addUserToEvent()
@@ -78,11 +81,21 @@ class DatabaseTestViewModel: ViewModel() {
     }
     fun createNewEvent()
     {
-        database.createEvent(eventName, "EventType", "Location", 1111111111, "A description of the event", "Event skill level", "10")//placeholder timestamp
+        viewModelScope.launch {
+            database.createEvent(
+                eventName,
+                "EventType",
+                "Location",
+                1111111111,
+                "A description of the event",
+                "Event skill level",
+                "10"
+            )//placeholder timestamp
+        }
     }
     fun changeAccountName(userID: String, newName: String)
     {
-        database.changeAccountDetails(newName = "newAccountName")
+        database.changeAccountDetails(newName = newName)
     }
     fun getEventWithID(eventID:String)
     {

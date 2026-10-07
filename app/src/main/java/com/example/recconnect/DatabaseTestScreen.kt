@@ -4,10 +4,7 @@ import android.app.AlertDialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -17,6 +14,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun DatabaseTestScreen(navController: NavController) {
@@ -124,7 +123,7 @@ fun DatabaseTestScreen(navController: NavController) {
             }
         )
         {
-            Text(text = "Load events")
+            Text(text = "Console log events")
         }
 
         Button(
@@ -154,7 +153,7 @@ fun DatabaseTestScreen(navController: NavController) {
         }
         Button(
             onClick = {
-                databaseTestViewModel.changeAccountName("1", "testAccount0")
+                databaseTestViewModel.changeAccountName(Firebase.auth.currentUser?.uid ?: "1", "Billy bob bangles")
             }
         )
         {
@@ -170,7 +169,7 @@ fun DatabaseTestScreen(navController: NavController) {
         }
         Button(
             onClick = {
-                databaseTestViewModel.getJoinedEventIDs("1")
+                databaseTestViewModel.getJoinedEventIDs(Firebase.auth.currentUser?.uid ?: "1")
             }
         )
         {
@@ -181,13 +180,6 @@ fun DatabaseTestScreen(navController: NavController) {
 
 
 
-        val events  = databaseTestViewModel.allEvents
-        LazyColumn {
-            items(events) { event ->
-                Text(event.title)
-                HorizontalDivider()
-            }
-        }
 
     }
 }

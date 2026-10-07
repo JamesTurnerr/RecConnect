@@ -42,7 +42,7 @@ interface DatabaseRepository {
      * @param skillLevel The level of skill the event will need
      * @param maxSpots The maximum amount of users that can attend the event
      */
-    fun createEvent(title: String,
+    suspend fun createEvent(title: String,
                     type: String,
                     location: String,
                     timestamp: Long,
