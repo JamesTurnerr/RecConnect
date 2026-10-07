@@ -204,7 +204,7 @@ fun EventCard(navController: NavController, eventId: String) {
                             .setCancelable(false)
                             .setPositiveButton(R.string.ok) { dialog, id ->
 
-                                eventCardViewModel.leaveEvent(navController, eventData.id)
+                                eventCardViewModel.leaveEvent(eventData.id) {navController.popBackStack()}
                             }
                             .setNegativeButton(R.string.cancel) { dialog, id ->
                                 dialog.dismiss() // Close the dialog
@@ -238,7 +238,7 @@ fun EventCard(navController: NavController, eventId: String) {
                             .setCancelable(false)
                             .setPositiveButton(R.string.ok) { dialog, id ->
 
-                                eventCardViewModel.joinEvent(navController, eventData.id)
+                                eventCardViewModel.joinEvent(eventData.id){ navController.popBackStack() }
                             }
                             .setNegativeButton(R.string.cancel) { dialog, id ->
                                 dialog.dismiss() // Close the dialog

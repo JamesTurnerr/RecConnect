@@ -54,7 +54,7 @@ class Firestore : DatabaseRepository {
         return true//TODO: does not yet return true or false on successful account creation
     }
 
-    override fun changeAccountDetails(newName: String?, newEmail: String?) {
+    override suspend fun changeAccountDetails(newName: String?, newEmail: String?) {
         val newDetails = mutableMapOf<String, Any>()
         if(!newName.isNullOrBlank())
         {
@@ -64,13 +64,13 @@ class Firestore : DatabaseRepository {
         {
             newDetails["email"] = newEmail
         }
-        if(!newDetails.isEmpty())
+        if(newDetails.isEmpty())
         {
-            db.collection("users").document(uid)
-                .update(newDetails)
-                .addOnSuccessListener { Log.d(TAG, "Users details updated to $newDetails") }
-                .addOnFailureListener { e -> Log.w(TAG, "Users details update failed", e) }
+            return
         }
+        db.collection("users").document(uid).update(newDetails).await()
+        Log.d(TAG, "User details updated to $newDetails")
+
 
     }
 
@@ -128,48 +128,28 @@ class Firestore : DatabaseRepository {
 
     }
 
-    override fun joinEvent(eventID: String) {
-        //Add user to event attending list
-        db.collection("events")
-            .document(eventID)
-            .update("attendeeIds", FieldValue.arrayUnion(db.collection("users").document(uid)))
-            .addOnSuccessListener {
-                Log.d(TAG, "User added to event: $eventID")
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error adding user to event", e)
-            }
-        //Add event to users events list
-        db.collection("users")
-            .document(uid)
-            .update("events", FieldValue.arrayUnion(db.collection("events").document(eventID)))
-            .addOnSuccessListener {
-                Log.d(TAG, "User added to event: $eventID")
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error adding user to event", e)
-            }
+    override suspend fun joinEvent(eventID: String) {
+        val userReference = db.collection("users").document(uid)
+        val eventReference = db.collection("events").document(eventID)
+
+        db.batch()
+            .update(eventReference, "attendeeIds", FieldValue.arrayUnion(userReference))
+            .update(userReference, "events", FieldValue.arrayUnion(eventReference))
+            .commit()
+            .await()
+        Log.d(TAG, "User added to event: $eventID")
     }
 
-    override fun leaveEvent(eventID: String) {
-        db.collection("events")
-            .document(eventID)
-            .update("attendeeIds", FieldValue.arrayRemove(db.collection("users").document(uid)))
-            .addOnSuccessListener {
-                Log.d(TAG, "User removed from event: $eventID")
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error removing user from event", e)
-            }
-        db.collection("users")
-            .document(uid)
-            .update("events", FieldValue.arrayRemove(db.collection("events").document(eventID)))
-            .addOnSuccessListener {
-                Log.d(TAG, "User removed to event: $eventID")
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error removing user to event", e)
-            }
+    override suspend fun leaveEvent(eventID: String) {
+        val userReference = db.collection("users").document(uid)
+        val eventReference = db.collection("events").document(eventID)
+
+        db.batch()
+            .update(eventReference, "attendeeIds", FieldValue.arrayRemove(userReference))
+            .update(userReference, "events", FieldValue.arrayRemove(eventReference))
+            .commit()
+            .await()
+        Log.d(TAG, "User removed from event: $eventID")
     }
 
     override suspend fun getUserById(userID: String): UserData {

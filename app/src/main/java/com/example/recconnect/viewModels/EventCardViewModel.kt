@@ -1,10 +1,9 @@
 package com.example.recconnect.viewModels
 
-import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.recconnect.DatabaseRepository
 import com.example.recconnect.models.EventData
 import com.example.recconnect.Firestore
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class EventCardViewModel(eventID: String): ViewModel() {
     val database : DatabaseRepository = Firestore()
@@ -23,7 +23,7 @@ class EventCardViewModel(eventID: String): ViewModel() {
     val eventDetails: StateFlow<EventData?> = flow {
         emit(database.getEventById(eventID))
     }
-        .catch { e -> Log.e(ContentValues.TAG, "Failed to load event", e) }
+        .catch { e -> Log.e(TAG, "Failed to load event", e) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -31,20 +31,29 @@ class EventCardViewModel(eventID: String): ViewModel() {
         )
 
 
-    fun joinEvent(navController: NavController, eventID: String)
-    {
+    fun joinEvent(eventID: String, onDone: () -> Unit) {
 
-        database.joinEvent(eventID)
-
-        navController.navigate("Home")
+        viewModelScope.launch {
+            try {
+                database.joinEvent(eventID)
+                onDone()
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to join event", e)
+            }
+        }
     }
 
-    fun leaveEvent(navController: NavController, eventID: String)
-    {
+    fun leaveEvent(eventID: String, onDone: () -> Unit) {
+        viewModelScope.launch {
 
-        database.leaveEvent(eventID)
+            try {
+                database.leaveEvent(eventID)
+                onDone()
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to leave event", e)
+            }
 
-        navController.navigate("Home")
+        }
     }
 
     suspend fun getAttendeesById(attendeeList: List<String>): List<String> = coroutineScope {

@@ -53,9 +53,15 @@ class DatabaseTestViewModel: ViewModel() {
             }
         }
     }
-    fun addUserToEvent()
-    {
-        database.joinEvent(eventIDinput)//existing event id
+
+    fun addUserToEvent() {
+        viewModelScope.launch {
+            try {
+                database.joinEvent(eventIDinput)//existing event id
+            } catch (e: Exception) {
+                Log.e(ContentValues.TAG, "Failed to join event", e)
+            }
+        }
     }
     fun outputUserData() {
         val userId = database.currentUserId ?: run {
@@ -108,9 +114,14 @@ class DatabaseTestViewModel: ViewModel() {
             )//placeholder timestamp
         }
     }
-    fun changeAccountName(userID: String, newName: String)
-    {
-        database.changeAccountDetails(newName = newName)
+    fun changeAccountName(userID: String, newName: String) {
+        viewModelScope.launch {
+            try {
+                database.changeAccountDetails(newName = newName)
+            } catch (e: Exception) {
+                Log.e(ContentValues.TAG, "Failed to change name", e)
+            }
+        }
     }
     fun getEventWithID(eventID:String)
     {

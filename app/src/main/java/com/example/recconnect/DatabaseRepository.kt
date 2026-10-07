@@ -21,7 +21,7 @@ interface DatabaseRepository {
      * @param newName (OPTIONAL) The new name the user chooses
      * @param newEmail (OPTIONAL) The new email the user choose
      */
-    fun changeAccountDetails(newName: String? = null, newEmail: String? = null)
+    suspend fun changeAccountDetails(newName: String? = null, newEmail: String? = null)
 
     /**
      * Get a list of event ID's that the user has been added to
@@ -59,13 +59,13 @@ interface DatabaseRepository {
      * Add user to an event
      * @param eventID The ID of the event the user will be added to
      */
-    fun joinEvent(eventID: String)
+    suspend fun joinEvent(eventID: String)
 
     /**
      * Remove the user from an event
      * @param eventID The ID of the event the user will be removed from
      */
-    fun leaveEvent(eventID: String)
+    suspend fun leaveEvent(eventID: String)
 
     /**
      *  Get a users details from their ID
