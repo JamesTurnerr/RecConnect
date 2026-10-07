@@ -2,12 +2,10 @@ package com.example.recconnect
 
 import android.app.AlertDialog
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -17,6 +15,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun DatabaseTestScreen(navController: NavController) {
@@ -124,17 +124,27 @@ fun DatabaseTestScreen(navController: NavController) {
             }
         )
         {
-            Text(text = "Load events")
+            Text(text = "Console log events")
+        }
+        Row()
+        {
+            Button(
+                onClick = {
+                    databaseTestViewModel.addUserToEvent()
+                }
+            )
+            {
+                Text(text = "AAdd self to event")
+            }
+            TextField(
+                value = databaseTestViewModel.eventIDinput,
+                onValueChange = { databaseTestViewModel.updateEventIDinput(it) },
+                label = { Text("Enter event ID") },
+                placeholder = { Text("Enter event ID") }
+            )
+
         }
 
-        Button(
-            onClick = {
-                databaseTestViewModel.addUserToEvent()
-            }
-        )
-        {
-            Text(text = "Add user '1' to event 'knPFKfHUS0jg54XHpXyt'")
-        }
 
         Button(
             onClick = {
@@ -154,24 +164,33 @@ fun DatabaseTestScreen(navController: NavController) {
         }
         Button(
             onClick = {
-                databaseTestViewModel.changeAccountName("1", "testAccount0")
+                databaseTestViewModel.changeAccountName(Firebase.auth.currentUser?.uid ?: "1", "Billy bob bangles")
             }
         )
         {
             Text(text = "Change user '1's name")
         }
-
-
-
-
-
-        val events  = databaseTestViewModel.allEvents
-        LazyColumn {
-            items(events) { event ->
-                Text(event)
-                HorizontalDivider()
+        Button(
+            onClick = {
+                databaseTestViewModel.getEventWithID("1")
             }
+        )
+        {
+            Text(text = "Console log event with id '1'")
         }
+        Button(
+            onClick = {
+                databaseTestViewModel.getJoinedEventIDs(Firebase.auth.currentUser?.uid ?: "1")
+            }
+        )
+        {
+            Text(text = "getJoinedEventIDs")
+        }
+
+
+
+
+
 
     }
 }

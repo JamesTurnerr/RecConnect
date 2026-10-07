@@ -13,22 +13,24 @@ interface DatabaseRepository {
     fun createAccount(name: String, email: String): Boolean
 
     /**
-     * Change the users name
-     * @param newName The new name the user chooses
+     * Change the users name and or email. If no/empty parameters are entered no database read will take place
+     * @param newName (OPTIONAL) The new name the user chooses
+     * @param newEmail (OPTIONAL) The new email the user choose
      */
-    fun changeAccountName(newName: String)
+    fun changeAccountDetails(newName: String? = null, newEmail: String? = null)
 
     /**
-     * Get a list of event ID's that the user has added themselves to
-     * @return List of integers of event ID's
+     * Get a list of event ID's that the user has been added to
+     * @param userID The ID of the user whose events we want to get
+     * @return List of joined event ID's
      */
-    suspend fun getJoinedEvents():List<String>
+    suspend fun getJoinedEventIDs(userID: String):List<String>
 
     /**
-     * Get a list of event ID's of all currently available events
-     * @return List of integers of event ID's
+     * Get a list of event instances of all currently available events
+     * @return List of all event instances
      */
-    suspend fun getAllEvents():List<String>
+    suspend fun getAllEvents():List<EventData>
 
     /**
      * Create a new event
@@ -40,13 +42,13 @@ interface DatabaseRepository {
      * @param skillLevel The level of skill the event will need
      * @param maxSpots The maximum amount of users that can attend the event
      */
-    fun createEvent(title: String,
-                    type: String,
-                    location: String,
-                    timestamp: Long,
-                    description: String,
-                    skillLevel: String,
-                    maxSpots: String
+    suspend fun createEvent(title: String,
+                            type: String,
+                            location: String,
+                            timestamp: Long,
+                            description: String,
+                            skillLevel: String,
+                            maxSpots: String
     )
 
     /**

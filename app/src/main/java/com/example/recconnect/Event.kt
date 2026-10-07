@@ -92,7 +92,7 @@ fun Event(navController: NavController, eventId: String) {
             horizontalArrangement = Arrangement.spacedBy((-14).dp)
         )
         {
-            for(attendee in eventData.attending.take(3))
+            for(attendee in eventData.attendeeIds.take(3))
             {
                 Image(
                     painter = painterResource(id = R.drawable.defaultpfp),
@@ -121,20 +121,20 @@ fun Event(navController: NavController, eventId: String) {
             Button(
                 modifier = Modifier.width(200.dp).height(67.dp),
                 onClick = {
-                val builder = AlertDialog.Builder(context)
-                builder.setMessage("Are you sure you want to join ${eventData.title}?")
-                    .setCancelable(false)
-                    .setPositiveButton("Ok") { dialog, id ->
-                        joinEvent(
-                            navController,
-                            eventData.id
-                        )
-                    }
-                    .setNegativeButton("Cancel") { dialog, id ->
-                        dialog.dismiss() // Close the dialog
-                    }
-                val alert = builder.create()
-                alert.show()
+                    val builder = AlertDialog.Builder(context)
+                    builder.setMessage("Are you sure you want to join ${eventData.title}?")
+                        .setCancelable(false)
+                        .setPositiveButton("Ok") { dialog, id ->
+                            joinEvent(
+                                navController,
+                                eventData.id
+                            )
+                        }
+                        .setNegativeButton("Cancel") { dialog, id ->
+                            dialog.dismiss() // Close the dialog
+                        }
+                    val alert = builder.create()
+                    alert.show()
                 }
             )
             {
