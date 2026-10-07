@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">RecConnect</string>
+    <string name="attending">Attending:</string>
+    <string name="description">Description:\n%1$s</string>
+    <string name="join_event">Join Event</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="join_event_confirmation">Are you sure you want to join %1$s?</string>
 </resources>

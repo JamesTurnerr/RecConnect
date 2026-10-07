@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -109,7 +110,7 @@ fun EventCard(navController: NavController, eventId: String) {
 
         //Attendees
         Text(
-            text = "Attending:",
+            text = stringResource(R.string.attending),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
         )
@@ -134,7 +135,7 @@ fun EventCard(navController: NavController, eventId: String) {
         if(eventData.description != "")
         {
             Text(
-                text = "Description:\n${eventData.description}",
+                text = stringResource(R.string.description, eventData.description),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
             )
@@ -149,17 +150,18 @@ fun EventCard(navController: NavController, eventId: String) {
             contentAlignment = Alignment.BottomCenter
         )
         {
+            val confirmationMessage = stringResource(R.string.join_event_confirmation, eventData.title)
             Button(
                 modifier = Modifier.width(200.dp).height(67.dp),
                 onClick = {
                 val builder = AlertDialog.Builder(context)
-                builder.setMessage("Are you sure you want to join ${eventData.title}?")
+                builder.setMessage(confirmationMessage)
                     .setCancelable(false)
-                    .setPositiveButton("Ok") { dialog, id ->
+                    .setPositiveButton(R.string.ok) { dialog, id ->
 
                         eventCardViewModel.joinEvent(navController, eventData.id)
                     }
-                    .setNegativeButton("Cancel") { dialog, id ->
+                    .setNegativeButton(R.string.cancel) { dialog, id ->
                         dialog.dismiss() // Close the dialog
                     }
                 val alert = builder.create()
@@ -168,7 +170,7 @@ fun EventCard(navController: NavController, eventId: String) {
             )
             {
                 Text(
-                    text = "Join Event",
+                    text = stringResource(R.string.join_event),
                     fontSize = 24.sp
                 )
             }
