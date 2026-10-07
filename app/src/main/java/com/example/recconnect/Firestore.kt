@@ -14,8 +14,11 @@ import kotlinx.coroutines.tasks.await
 import kotlin.String
 
 class Firestore : DatabaseRepository {
+    override val currentUserId: String?
+        get() = Firebase.auth.currentUser?.uid
     val db = Firebase.firestore
-    var deviceUserID = Firebase.auth.currentUser?.uid ?: "1"//default to userID: 1
+    private val uid: String
+        get() = currentUserId ?: throw IllegalStateException("User not logged in")
 
     private fun DocumentSnapshot.toEventData(): EventData = EventData(
         id = id,
@@ -63,7 +66,7 @@ class Firestore : DatabaseRepository {
         }
         if(!newDetails.isEmpty())
         {
-            db.collection("users").document(deviceUserID)
+            db.collection("users").document(uid)
                 .update(newDetails)
                 .addOnSuccessListener { Log.d(TAG, "Users details updated to $newDetails") }
                 .addOnFailureListener { e -> Log.w(TAG, "Users details update failed", e) }
@@ -106,13 +109,13 @@ class Firestore : DatabaseRepository {
             "location" to location,
             "timestamp" to timestamp,
             "description" to description,
-            "creatorId" to deviceUserID,
-            "creatorName" to getUserById(deviceUserID).name,
+            "creatorId" to uid,
+            "creatorName" to getUserById(uid).name,
             "skillLevel" to skillLevel,
             "maxSpots" to maxSpots,
-            "attendeeIds" to listOf<DocumentReference>(db.collection("users").document(deviceUserID))
+            "attendeeIds" to listOf<DocumentReference>(db.collection("users").document(uid))
         )
-        val userReference = db.collection("users").document(deviceUserID)
+        val userReference = db.collection("users").document(uid)
         val eventReference = db.collection("events").document()
         try {
             db.batch().set(eventReference, event)
@@ -129,7 +132,7 @@ class Firestore : DatabaseRepository {
         //Add user to event attending list
         db.collection("events")
             .document(eventID)
-            .update("attendeeIds", FieldValue.arrayUnion(db.collection("users").document(deviceUserID)))
+            .update("attendeeIds", FieldValue.arrayUnion(db.collection("users").document(uid)))
             .addOnSuccessListener {
                 Log.d(TAG, "User added to event: $eventID")
             }
@@ -138,7 +141,7 @@ class Firestore : DatabaseRepository {
             }
         //Add event to users events list
         db.collection("users")
-            .document(deviceUserID)
+            .document(uid)
             .update("events", FieldValue.arrayUnion(db.collection("events").document(eventID)))
             .addOnSuccessListener {
                 Log.d(TAG, "User added to event: $eventID")
@@ -151,7 +154,7 @@ class Firestore : DatabaseRepository {
     override fun leaveEvent(eventID: String) {
         db.collection("events")
             .document(eventID)
-            .update("attendeeIds", FieldValue.arrayRemove(db.collection("users").document(deviceUserID)))
+            .update("attendeeIds", FieldValue.arrayRemove(db.collection("users").document(uid)))
             .addOnSuccessListener {
                 Log.d(TAG, "User removed from event: $eventID")
             }
@@ -159,7 +162,7 @@ class Firestore : DatabaseRepository {
                 Log.w(TAG, "Error removing user from event", e)
             }
         db.collection("users")
-            .document(deviceUserID)
+            .document(uid)
             .update("events", FieldValue.arrayRemove(db.collection("events").document(eventID)))
             .addOnSuccessListener {
                 Log.d(TAG, "User removed to event: $eventID")

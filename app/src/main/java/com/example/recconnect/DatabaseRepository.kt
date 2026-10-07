@@ -7,6 +7,7 @@ import com.example.recconnect.models.UserData
  * Interface containing all relevant database functions
  */
 interface DatabaseRepository {
+    val currentUserId: String?
     /**
      * Attempt to add a new user account to database
      * @param name The name the user chooses for their account

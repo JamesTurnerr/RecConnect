@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recconnect.DatabaseRepository
 import com.example.recconnect.Firestore
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -16,7 +14,7 @@ import androidx.compose.runtime.setValue
 
 class DatabaseTestViewModel: ViewModel() {
     val database : DatabaseRepository = Firestore()
-    var deviceUserID = Firebase.auth.currentUser?.uid ?: "1"//default to userID: 1
+
     var name by mutableStateOf("")
         private set
 
@@ -60,9 +58,13 @@ class DatabaseTestViewModel: ViewModel() {
         database.joinEvent(eventIDinput)//existing event id
     }
     fun outputUserData() {
+        val userId = database.currentUserId ?: run {
+            Log.w(ContentValues.TAG, "No user logged in")
+            return
+        }
         viewModelScope.launch {
             try {
-                val user = database.getUserById(deviceUserID)
+                val user = database.getUserById(userId)
                 Log.d(ContentValues.TAG, "User email: ${user.email}")
                 Log.d(ContentValues.TAG, "User name: ${user.name}")
             } catch (e: Exception) {

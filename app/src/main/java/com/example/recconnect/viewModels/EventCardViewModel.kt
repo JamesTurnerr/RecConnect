@@ -8,8 +8,6 @@ import androidx.navigation.NavController
 import com.example.recconnect.DatabaseRepository
 import com.example.recconnect.models.EventData
 import com.example.recconnect.Firestore
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.stateIn
 
 class EventCardViewModel(eventID: String): ViewModel() {
     val database : DatabaseRepository = Firestore()
-    var deviceUserID = Firebase.auth.currentUser?.uid ?: "1"//default to userID: 1
 
     val eventDetails: StateFlow<EventData?> = flow {
         emit(database.getEventById(eventID))
@@ -55,4 +52,7 @@ class EventCardViewModel(eventID: String): ViewModel() {
             .map { id -> async { database.getUserById(id).name } }
             .awaitAll()
     }
+
+    fun isAttending(event: EventData): Boolean =
+        database.currentUserId in event.attendeeIds
 }

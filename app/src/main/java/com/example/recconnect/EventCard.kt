@@ -187,7 +187,7 @@ fun EventCard(navController: NavController, eventId: String) {
         Add to event then redirect to home screen on accept
          */
         //leave event
-        if(eventData.attendeeIds.contains(eventCardViewModel.deviceUserID))
+        if (eventCardViewModel.isAttending(eventData))
         {
             Box(
                 modifier = Modifier.fillMaxSize(),
