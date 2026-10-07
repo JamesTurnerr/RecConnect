@@ -2,6 +2,8 @@ package com.example.recconnect
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.example.recconnect.models.EventData
+import com.example.recconnect.models.UserData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentReference

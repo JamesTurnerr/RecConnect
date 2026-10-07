@@ -1,4 +1,4 @@
-package com.example.recconnect
+package com.example.recconnect.models
 
 import com.google.firebase.firestore.DocumentId
 import java.text.SimpleDateFormat

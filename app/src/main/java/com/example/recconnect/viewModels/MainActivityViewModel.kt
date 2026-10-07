@@ -1,9 +1,12 @@
-package com.example.recconnect
+package com.example.recconnect.viewModels
 
-import android.content.ContentValues.TAG
+import android.content.ContentValues
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.recconnect.DatabaseRepository
+import com.example.recconnect.models.EventData
+import com.example.recconnect.Firestore
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +22,7 @@ class MainActivityViewModel : ViewModel() {
     val events: StateFlow<List<EventData>> = flow {
         emit(database.getAllEvents())
     }
-        .catch { e -> Log.e(TAG, "Failed to load events", e) }
+        .catch { e -> Log.e(ContentValues.TAG, "Failed to load events", e) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(0),

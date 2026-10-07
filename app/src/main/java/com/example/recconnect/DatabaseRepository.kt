@@ -1,5 +1,8 @@
 package com.example.recconnect
 
+import com.example.recconnect.models.EventData
+import com.example.recconnect.models.UserData
+
 /**
  * Interface containing all relevant database functions
  */

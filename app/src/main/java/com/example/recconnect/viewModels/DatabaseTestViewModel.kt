@@ -1,15 +1,18 @@
-package com.example.recconnect
+package com.example.recconnect.viewModels
 
-import android.content.ContentValues.TAG
+import android.content.ContentValues
 import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.recconnect.DatabaseRepository
+import com.example.recconnect.Firestore
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 class DatabaseTestViewModel: ViewModel() {
     val database : DatabaseRepository = Firestore()
@@ -47,8 +50,8 @@ class DatabaseTestViewModel: ViewModel() {
             val allEvents = database.getAllEvents()
             for(event in allEvents)
             {
-                Log.d(TAG, "Event ID: ${event.id}")
-                Log.d(TAG, "Event title: ${event.title}")
+                Log.d(ContentValues.TAG, "Event ID: ${event.id}")
+                Log.d(ContentValues.TAG, "Event title: ${event.title}")
             }
         }
     }
@@ -60,10 +63,10 @@ class DatabaseTestViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val user = database.getUserById(deviceUserID)
-                Log.d(TAG, "User email: ${user.email}")
-                Log.d(TAG, "User name: ${user.name}")
+                Log.d(ContentValues.TAG, "User email: ${user.email}")
+                Log.d(ContentValues.TAG, "User name: ${user.name}")
             } catch (e: Exception) {
-                Log.e(TAG, "User not found", e)
+                Log.e(ContentValues.TAG, "User not found", e)
             }
         }
     }
@@ -71,17 +74,17 @@ class DatabaseTestViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val event = database.getEventById("1")
-                Log.d(TAG, "Event id: ${event.id}")
-                Log.d(TAG, "Event title: ${event.title}")
-                Log.d(TAG, "Event type: ${event.type}")
-                Log.d(TAG, "Event location: ${event.location}")
+                Log.d(ContentValues.TAG, "Event id: ${event.id}")
+                Log.d(ContentValues.TAG, "Event title: ${event.title}")
+                Log.d(ContentValues.TAG, "Event type: ${event.type}")
+                Log.d(ContentValues.TAG, "Event location: ${event.location}")
                 for(a in event.attendeeIds)
                 {
-                    Log.d(TAG, "Attending: $a")
+                    Log.d(ContentValues.TAG, "Attending: $a")
                 }
-                Log.d(TAG, "Timestamp: ${event.readableTime()}")
+                Log.d(ContentValues.TAG, "Timestamp: ${event.readableTime()}")
             } catch (e: Exception) {
-                Log.e(TAG, "Event not found", e)
+                Log.e(ContentValues.TAG, "Event not found", e)
             }
         }
     }
@@ -112,17 +115,17 @@ class DatabaseTestViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val event = database.getEventById(eventID)
-                Log.d(TAG, "id ${event.id}")
-                Log.d(TAG, "title ${event.title}")
-                Log.d(TAG, "type ${event.type}")
+                Log.d(ContentValues.TAG, "id ${event.id}")
+                Log.d(ContentValues.TAG, "title ${event.title}")
+                Log.d(ContentValues.TAG, "type ${event.type}")
                 for(atendee in event.attendeeIds)
                 {
-                    Log.d(TAG, "attendee $atendee")
+                    Log.d(ContentValues.TAG, "attendee $atendee")
                 }
-                Log.d(TAG, "creator id ${event.creatorUser}")
+                Log.d(ContentValues.TAG, "creator id ${event.creatorUser}")
 
             } catch (e: Exception) {
-                Log.e(TAG, "event not found", e)
+                Log.e(ContentValues.TAG, "event not found", e)
             }
         }
     }
@@ -135,11 +138,11 @@ class DatabaseTestViewModel: ViewModel() {
 
                 for(event in events)
                 {
-                    Log.d(TAG, "eventid: $event")
+                    Log.d(ContentValues.TAG, "eventid: $event")
                 }
 
             } catch (e: Exception) {
-                Log.e(TAG, "events not found", e)
+                Log.e(ContentValues.TAG, "events not found", e)
             }
         }
     }

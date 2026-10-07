@@ -36,11 +36,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.recconnect.viewModels.EventCardViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun EventCard(navController: NavController, eventId: String) {
-    val eventCardViewModel: EventCardViewModel = viewModel(key = eventId) { EventCardViewModel(eventId) }
+    val eventCardViewModel: EventCardViewModel = viewModel(key = eventId) {
+        EventCardViewModel(
+            eventId
+        )
+    }
     val loadedEvent by eventCardViewModel.eventDetails.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()

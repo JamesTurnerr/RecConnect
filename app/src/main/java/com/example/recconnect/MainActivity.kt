@@ -31,11 +31,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recconnect.ui.theme.RecConnectTheme
+import com.example.recconnect.viewModels.MainActivityViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
-    private val profileViewModel: ProfileViewModel by viewModels()
+    private val profileViewModel: com.example.recconnect.viewModels.ProfileViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -144,17 +145,7 @@ fun Home(navController: NavController) {
             Text("Go to database test screen")
         }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(16.dp)
-        ) {
-            items(events) { event ->
-                Button(onClick = { navController.navigate("EventCard/${event.id}") })
-                {
-                    Text(text = event.title + ":" + event.id)
-                }
 
-            }
-        }
         Button(onClick = { navController.navigate("DatabaseTest") }) {
             Text("Go to database test screen")
         }
@@ -165,6 +156,18 @@ fun Home(navController: NavController) {
 
         Button(onClick = { navController.navigate("Profile/${"zDsiLACuUloJMMy4wMt2"}")}) {
             Text("test profile not logged into")
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(16.dp)
+        ) {
+            items(events) { event ->
+                Button(onClick = { navController.navigate("EventCard/${event.id}") })
+                {
+                    Text(text = event.title + ":" + event.id)
+                }
+
+            }
         }
 
     }
