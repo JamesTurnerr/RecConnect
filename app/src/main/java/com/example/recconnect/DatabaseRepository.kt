@@ -43,12 +43,12 @@ interface DatabaseRepository {
      * @param maxSpots The maximum amount of users that can attend the event
      */
     suspend fun createEvent(title: String,
-                    type: String,
-                    location: String,
-                    timestamp: Long,
-                    description: String,
-                    skillLevel: String,
-                    maxSpots: String
+                            type: String,
+                            location: String,
+                            timestamp: Long,
+                            description: String,
+                            skillLevel: String,
+                            maxSpots: String
     )
 
     /**
