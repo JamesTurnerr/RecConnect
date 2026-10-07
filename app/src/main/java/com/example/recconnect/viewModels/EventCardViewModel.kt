@@ -1,6 +1,5 @@
 package com.example.recconnect.viewModels
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+private const val TAG = "RecConnect.EventCardViewModel"
 class EventCardViewModel(eventID: String): ViewModel() {
     val database : DatabaseRepository = Firestore()
 

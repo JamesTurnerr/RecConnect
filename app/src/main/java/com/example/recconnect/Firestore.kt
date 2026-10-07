@@ -1,6 +1,5 @@
 package com.example.recconnect
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import com.example.recconnect.models.EventData
 import com.example.recconnect.models.UserData
@@ -13,6 +12,7 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import kotlin.String
 
+private const val TAG = "RecConnect.Firestore"
 class Firestore : DatabaseRepository {
     override val currentUserId: String?
         get() = Firebase.auth.currentUser?.uid
