@@ -92,7 +92,7 @@ fun CreateEventScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Create Activity", style = MaterialTheme.typography.headlineMedium) },
+                title = { Text("Create Event", style = MaterialTheme.typography.headlineMedium) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")

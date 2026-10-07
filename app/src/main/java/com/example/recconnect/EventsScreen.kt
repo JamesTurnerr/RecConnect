@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -45,6 +46,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -74,115 +77,101 @@ fun EventsScreen(
                     it.location.contains(searchQuery, ignoreCase = true)
         }
 
-    Column(
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(gridColumns),
+        contentPadding = PaddingValues(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
         // header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text("Events", style = MaterialTheme.typography.headlineMedium)
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Text(
+                "Events",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
-        // list an event button
-        Button(
-            onClick = { navController.navigate("createEvent") },
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text("+ List an Event")
+        // create an event button
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Button(
+                onClick = { navController.navigate("createEvent") },
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("+ Create an Event")
+            }
         }
-
-        Spacer(modifier = Modifier.height(12.dp))
 
         // search bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Search") },
-            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Search") },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         // filter chips
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item {
-                FilterChip(
-                    selected = selectedType == "All",
-                    onClick = { selectedType = "All" },
-                    label = { Text("All") },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.secondary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                        containerColor = MaterialTheme.colorScheme.surface
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                item {
+                    FilterChip(
+                        selected = selectedType == "All",
+                        onClick = { selectedType = "All" },
+                        label = { Text("All") },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
                     )
-                )
-            }
-            items(EventTypes.type) { eventType ->
-                FilterChip(
-                    selected = selectedType == eventType.key,
-                    onClick = { selectedType = eventType.key },
-                    label = { Text(eventType.key) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.secondary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
-                        containerColor = MaterialTheme.colorScheme.surface
+                }
+                items(EventTypes.type) { eventType ->
+                    FilterChip(
+                        selected = selectedType == eventType.key,
+                        onClick = { selectedType = eventType.key },
+                        label = { Text(eventType.key) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
                     )
-                )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // event cards
+        // event cards / message
         if (filteredEvents.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     text = if (allEvents.isEmpty()) "No events yet - be the first to list one!"
                     else "No events match your filters",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp)
                 )
             }
         } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(gridColumns),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) {
-                items(filteredEvents) { event ->
-                    EventCard(
-                        event = event,
-                        onViewClick = { navController.navigate("Event/${event.id}") }
-                    )
-                }
+            items(filteredEvents) { event ->
+                EventCard(
+                    event = event,
+                    onViewClick = { navController.navigate("Event/${event.id}") }
+                )
             }
         }
     }

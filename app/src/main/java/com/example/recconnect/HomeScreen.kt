@@ -1,5 +1,6 @@
 package com.example.recconnect
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,19 +22,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -45,7 +47,9 @@ fun timeUntil(timestamp: Long): String {
     return when {
         days >= 2 -> "in $days days"
         days == 1L -> "tomorrow"
-        hours >= 1 -> "in $hours hours"
+        hours == 1L -> "in 1 hour"
+        hours >= 2 -> "in $hours hours"
+        minutes <= 1 -> "starting now"
         else -> "in $minutes minutes"
     }
 }
@@ -76,20 +80,28 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    "RecConnect",
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(
-                    "Hey, ${eventViewModel.currentUserName}!",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                IconButton(
+                    onClick = { navController.navigate("Settings") },
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                }
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.rec_connect_logo_transparent),
+                        contentDescription = "RecConnect logo",
+                        modifier = Modifier.height(160.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "Hey, ${eventViewModel.currentUserName}!",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
 
@@ -109,13 +121,6 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text("You haven't joined any events yet", style = MaterialTheme.typography.bodyLarge)
-                        Spacer(Modifier.height(12.dp))
-                        Button(
-                            onClick = { navController.navigate("createEvent") },
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
-                        ) {
-                            Text("+ Add an event")
-                        }
                     }
                 }
             } else {
@@ -185,6 +190,48 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
             }
         }
 
+        // rest of the users joined events
+        if (laterJoined.isNotEmpty()) {
+            item { Text("Your upcoming events", style = MaterialTheme.typography.titleMedium) }
+            items(laterJoined) { event ->
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { navController.navigate("Event/${event.id}") }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.tertiary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                EventTypes.iconFor(event.type),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onTertiary
+                            )
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(event.title, style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                "${event.readableTime()} · ${event.location}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
         // other events happening this week (scrolls sideways, could change if weird)
         if (thisWeek.isNotEmpty()) {
             item { Text("Happening this week", style = MaterialTheme.typography.titleMedium) }
@@ -224,48 +271,6 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
                                     maxLines = 1
                                 )
                             }
-                        }
-                    }
-                }
-            }
-        }
-
-        // rest of the users joined events
-        if (laterJoined.isNotEmpty()) {
-            item { Text("Your upcoming events", style = MaterialTheme.typography.titleMedium) }
-            items(laterJoined) { event ->
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { navController.navigate("Event/${event.id}") }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.tertiary),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                EventTypes.iconFor(event.type),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onTertiary
-                            )
-                        }
-                        Spacer(Modifier.width(12.dp))
-                        Column {
-                            Text(event.title, style = MaterialTheme.typography.titleMedium)
-                            Text(
-                                "${event.readableTime()} · ${event.location}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
                         }
                     }
                 }
