@@ -117,7 +117,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Home(navController: NavController) {
-    val userid = "ADTT8zkzIMoNxEzMoymU"
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -136,7 +135,7 @@ fun Home(navController: NavController) {
             Text("Go to database test screen")
         }
 
-        Button(onClick = { navController.navigate("Profile/${userid}")}) {
+        Button(onClick = { navController.navigate("Profile/${Firebase.auth.currentUser?.uid}")}) {
             Text("go to profile")
         }
 

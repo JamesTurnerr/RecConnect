@@ -19,7 +19,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /*fun updateProfile(
+    fun updateProfile(
         email: String,
         name: String,
         onSuccess: () -> Unit,
@@ -27,9 +27,9 @@ class ProfileViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                repository.updateUser(
-                    email = email,
-                    name = name
+                repository.changeAccountDetails(
+                    newName = name,
+                    newEmail = email
                 )
 
                 // Update the local profile aswell
@@ -43,5 +43,5 @@ class ProfileViewModel : ViewModel() {
                 onError(e)
             }
         }
-    }*/
+    }
 }
