@@ -32,11 +32,11 @@ class DatabaseTestViewModel: ViewModel() {
         eventName = newEventName
     }
 
-    var allEvents by mutableStateOf<List<String>>(emptyList())
+    var allEvents by mutableStateOf<List<EventData>>(emptyList())
         private set
     fun loadEvents() {
         viewModelScope.launch {
-            allEvents = database.getJoinedEvents()
+            allEvents = database.getAllEvents()
         }
     }
     fun addUserToEvent()
@@ -62,7 +62,7 @@ class DatabaseTestViewModel: ViewModel() {
                 Log.d(TAG, "Event title: ${event.title}")
                 Log.d(TAG, "Event type: ${event.type}")
                 Log.d(TAG, "Event location: ${event.location}")
-                for(a in event.attending)
+                for(a in event.attendeeIds)
                 {
                     Log.d(TAG, "Attending: $a")
                 }
@@ -83,6 +83,42 @@ class DatabaseTestViewModel: ViewModel() {
     fun changeAccountName(userID: String, newName: String)
     {
         database.changeAccountDetails(newName = "newAccountName")
+    }
+    fun getEventWithID(eventID:String)
+    {
+        viewModelScope.launch {
+            try {
+                val event = database.getEventById(eventID)
+                Log.d(TAG, "id ${event.id}")
+                Log.d(TAG, "title ${event.title}")
+                Log.d(TAG, "type ${event.type}")
+                for(atendee in event.attendeeIds)
+                {
+                    Log.d(TAG, "attendee $atendee")
+                }
+                Log.d(TAG, "creator id ${event.creatorUser}")
+
+            } catch (e: Exception) {
+                Log.e(TAG, "event not found", e)
+            }
+        }
+    }
+
+    fun getJoinedEventIDs(userID: String)
+    {
+        viewModelScope.launch {
+            try {
+                val events = database.getJoinedEventIDs(userID)
+
+                for(event in events)
+                {
+                    Log.d(TAG, "eventid: $event")
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "events not found", e)
+            }
+        }
     }
 
 }

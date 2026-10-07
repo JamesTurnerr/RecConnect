@@ -160,6 +160,22 @@ fun DatabaseTestScreen(navController: NavController) {
         {
             Text(text = "Change user '1's name")
         }
+        Button(
+            onClick = {
+                databaseTestViewModel.getEventWithID("1")
+            }
+        )
+        {
+            Text(text = "Console log event with id '1'")
+        }
+        Button(
+            onClick = {
+                databaseTestViewModel.getJoinedEventIDs("1")
+            }
+        )
+        {
+            Text(text = "getJoinedEventIDs")
+        }
 
 
 
@@ -168,7 +184,7 @@ fun DatabaseTestScreen(navController: NavController) {
         val events  = databaseTestViewModel.allEvents
         LazyColumn {
             items(events) { event ->
-                Text(event)
+                Text(event.title)
                 HorizontalDivider()
             }
         }

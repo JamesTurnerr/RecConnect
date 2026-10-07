@@ -51,22 +51,33 @@ class Firestore : DatabaseRepository {
 
     }
 
-    override suspend fun getJoinedEvents(): List<String> {//TODO: just get from user document in db
+    override suspend fun getJoinedEventIDs(userID: String): List<String> {
         return try {
-            val eventNames = db.collection("events")
-                .whereArrayContains("attending", userID).get().await()
-            eventNames.documents.mapNotNull { it.id }
+            val eventIDs = db.collection("users").document(userID)
+                .get().await()
+            (eventIDs.get("events") as? List<DocumentReference>)?.map {it.id} ?: emptyList<String>()
         } catch (e: Exception) {
-            Log.w(TAG, "Error getting events", e)
+            Log.w(TAG, "Error getting IDs", e)
             emptyList()
         }
     }
 
-    override suspend fun getAllEvents(): List<String> {
+    override suspend fun getAllEvents(): List<EventData> {
         return try {
-            val eventNames = db.collection("events").get().await()
-            eventNames.documents.mapNotNull { doc ->
-                doc.getString("name")
+            val allEvents = db.collection("events").get().await()
+            allEvents.documents.mapNotNull { event ->
+                EventData(
+                    id = event.id,
+                    title = event.getString("title") ?: "",
+                    type = event.getString("type") ?: "",
+                    location = event.getString("location") ?: "",
+                    timestamp = event.getLong("timestamp") ?: 11111111111L,
+                    description = event.getString("description") ?: "",
+                    creatorUser = event.getString("creatorUser") ?: "",
+                    skillLevel = event.getString("skillLevel") ?: "",
+                    maxSpots = event.getString("maxSpots") ?: "",
+                    attendeeIds = (event.get("attendeeIds") ?: emptyList<String>()) as List<String>
+                )
             }
         } catch (e: Exception) {
             Log.w(TAG, "Error getting events", e)
@@ -145,18 +156,16 @@ class Firestore : DatabaseRepository {
             .document(eventID).get().await()
 
         return EventData(
-            id = eventID,
+            id = event.id,
             title = event.getString("title") ?: "",
             type = event.getString("type") ?: "",
             location = event.getString("location") ?: "",
-            timestamp = event.getLong("timestamp") ?: 1637653200000,
-            attending = (event.get("attending") ?: "") as List<String>,
+            timestamp = event.getLong("timestamp") ?: 11111111111L,
             description = event.getString("description") ?: "",
-            creatorId = event.getString("creatorId") ?: "",
-            creatorName = event.getString("creatorName") ?: "",
+            creatorUser = event.getString("creatorUser") ?: "",
             skillLevel = event.getString("skillLevel") ?: "",
             maxSpots = event.getString("maxSpots") ?: "",
-            attendeeIds = (event.get("attendeeIds") ?: "") as List<String>
+            attendeeIds = (event.get("attendeeIds") ?: emptyList<String>()) as List<String>
         )
     }
 }
