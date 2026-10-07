@@ -37,6 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun Profile(
@@ -139,17 +141,19 @@ fun Profile(
                         )
                     }
 
-                    IconButton(
-                        onClick = {
-                            navController.navigate(
-                                "EditProfile/${userHandle}"
+                    if (userHandle == Firebase.auth.currentUser?.uid) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(
+                                    "EditProfile/${userHandle}"
+                                )
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ModeEdit,
+                                contentDescription = "edit profile"
                             )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ModeEdit,
-                            contentDescription = "edit profile"
-                        )
                     }
                 }
             }

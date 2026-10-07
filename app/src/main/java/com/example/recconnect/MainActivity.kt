@@ -139,5 +139,9 @@ fun Home(navController: NavController) {
             Text("go to profile")
         }
 
+        Button(onClick = { navController.navigate("Profile/${"zDsiLACuUloJMMy4wMt2"}")}) {
+            Text("test profile not logged into")
+        }
+
     }
 }
