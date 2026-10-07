@@ -29,7 +29,7 @@ class Firestore : DatabaseRepository {
         description = getString("description") ?: "",
         creatorUser = getString("creatorUser") ?: "",
         skillLevel = getString("skillLevel") ?: "",
-        maxSpots = getString("maxSpots") ?: "",
+        maxSpots = getLong("maxSpots")?.toInt() ?: 0,
         attendeeIds = (get("attendeeIds") as? List<*>)
             ?.filterIsInstance<DocumentReference>()
             ?.map { it.id }
@@ -110,7 +110,7 @@ class Firestore : DatabaseRepository {
                                      timestamp: Long,
                                      description: String,
                                      skillLevel: String,
-                                     maxSpots: String
+                                     maxSpots: Int
     ) {
         val event = hashMapOf(
             "title" to title,

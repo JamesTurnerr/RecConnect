@@ -109,7 +109,7 @@ class DatabaseTestViewModel: ViewModel() {
                 1111111111,
                 "A description of the event",
                 "Event skill level",
-                "10"
+                10
             )//placeholder timestamp
         }
     }

@@ -52,7 +52,7 @@ interface DatabaseRepository {
                             timestamp: Long,
                             description: String,
                             skillLevel: String,
-                            maxSpots: String
+                            maxSpots: Int
     )
 
     /**

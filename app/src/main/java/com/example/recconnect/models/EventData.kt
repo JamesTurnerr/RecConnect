@@ -14,7 +14,7 @@ data class EventData(
     val description: String,
     val creatorUser: String,
     val skillLevel: String,
-    val maxSpots: String,
+    val maxSpots: Int,
     val attendeeIds: List<String>
 ) {
     /**
@@ -42,7 +42,7 @@ data class EventData(
                     "",
                     "1",
                     "Easy",
-                    "10",
+                    10,
                     listOf("1", "2")
                 ),
                 EventData("2",
@@ -53,7 +53,7 @@ data class EventData(
                     "Mountain biking",
                     "1",
                     "Easy",
-                    "10",
+                    10,
                     listOf("1", "2")
                 ),
                 EventData("3",
@@ -64,7 +64,7 @@ data class EventData(
                     "",
                     "1",
                     "Easy",
-                    "10",
+                    5,
                     listOf("1", "2")
                 ),
                 EventData(
@@ -76,7 +76,7 @@ data class EventData(
                     "",
                     "1",
                     "Easy",
-                    "10",
+                    4,
                     listOf("1", "2")
                 )
             )
