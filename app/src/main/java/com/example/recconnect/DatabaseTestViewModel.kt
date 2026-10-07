@@ -7,15 +7,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 class DatabaseTestViewModel: ViewModel() {
     val database : DatabaseRepository = Firestore()
+    var deviceUserID = Firebase.auth.currentUser?.uid ?: "1"//default to userID: 1
     var name by mutableStateOf("")
         private set
 
     fun updateName(newName: String) {
         name = newName
+    }
+
+    var eventIDinput by mutableStateOf("")
+        private set
+
+    fun updateEventIDinput(newEventIDinput: String) {
+        eventIDinput = newEventIDinput
     }
 
     var email by mutableStateOf("")
@@ -32,21 +42,24 @@ class DatabaseTestViewModel: ViewModel() {
         eventName = newEventName
     }
 
-    var allEvents by mutableStateOf<List<String>>(emptyList())
-        private set
     fun loadEvents() {
         viewModelScope.launch {
-            allEvents = database.getJoinedEvents()
+            val allEvents = database.getAllEvents()
+            for(event in allEvents)
+            {
+                Log.d(TAG, "Event ID: ${event.id}")
+                Log.d(TAG, "Event title: ${event.title}")
+            }
         }
     }
     fun addUserToEvent()
     {
-        database.joinEvent("knPFKfHUS0jg54XHpXyt")//existing event id
+        database.joinEvent(eventIDinput)//existing event id
     }
     fun outputUserData() {
         viewModelScope.launch {
             try {
-                val user = database.getUserById("zDsiLACuUloJMMy4wMt2")
+                val user = database.getUserById(deviceUserID)
                 Log.d(TAG, "User email: ${user.email}")
                 Log.d(TAG, "User name: ${user.name}")
             } catch (e: Exception) {
@@ -62,7 +75,7 @@ class DatabaseTestViewModel: ViewModel() {
                 Log.d(TAG, "Event title: ${event.title}")
                 Log.d(TAG, "Event type: ${event.type}")
                 Log.d(TAG, "Event location: ${event.location}")
-                for(a in event.attending)
+                for(a in event.attendeeIds)
                 {
                     Log.d(TAG, "Attending: $a")
                 }
@@ -78,7 +91,57 @@ class DatabaseTestViewModel: ViewModel() {
     }
     fun createNewEvent()
     {
-        database.createEvent(eventName, "Location", 1111111111)//placeholder timestamp
+        viewModelScope.launch {
+            database.createEvent(
+                eventName,
+                "EventType",
+                "Location",
+                1111111111,
+                "A description of the event",
+                "Event skill level",
+                "10"
+            )//placeholder timestamp
+        }
+    }
+    fun changeAccountName(userID: String, newName: String)
+    {
+        database.changeAccountDetails(newName = newName)
+    }
+    fun getEventWithID(eventID:String)
+    {
+        viewModelScope.launch {
+            try {
+                val event = database.getEventById(eventID)
+                Log.d(TAG, "id ${event.id}")
+                Log.d(TAG, "title ${event.title}")
+                Log.d(TAG, "type ${event.type}")
+                for(atendee in event.attendeeIds)
+                {
+                    Log.d(TAG, "attendee $atendee")
+                }
+                Log.d(TAG, "creator id ${event.creatorUser}")
+
+            } catch (e: Exception) {
+                Log.e(TAG, "event not found", e)
+            }
+        }
+    }
+
+    fun getJoinedEventIDs(userID: String)
+    {
+        viewModelScope.launch {
+            try {
+                val events = database.getJoinedEventIDs(userID)
+
+                for(event in events)
+                {
+                    Log.d(TAG, "eventid: $event")
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "events not found", e)
+            }
+        }
     }
 
 }

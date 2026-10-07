@@ -24,6 +24,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recconnect.ui.theme.RecConnectTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +43,26 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        NavHost(navController = navController, startDestination = "Home") {
+                        val startDestination = if (Firebase.auth.currentUser != null) "Home" else "Register"
+
+                        NavHost(navController = navController, startDestination = startDestination) {
+                            composable("Register") {
+                                RegisterScreen(
+                                    onRegistered = {
+                                        navController.navigate("Home") { popUpTo("Register") { inclusive = true } }
+                                    },
+                                    onNavigateToLogin = { navController.navigate("Login") }   // replaces the commented-out line
+                                )
+                            }
+
+                            composable("Login") {
+                                LoginScreen(
+                                    onLoggedIn = {
+                                        navController.navigate("Home") { popUpTo("Register") { inclusive = true } }
+                                    },
+                                    onNavigateToRegister = { navController.popBackStack() }
+                                )
+                            }
                             composable("Home") {
                                 Home(navController = navController)
                             }
@@ -74,7 +95,7 @@ fun Home(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Homepage/Navigation Testing")
+        Text("Homepage/Navigation Testing\nUser ID: ${Firebase.auth.currentUser?.uid}")
 
         Button(onClick = { navController.navigate("Event/1") }) {
             Text("Go to Event 1")
