@@ -92,7 +92,7 @@ fun Event(navController: NavController, eventId: String) {
             horizontalArrangement = Arrangement.spacedBy((-14).dp)
         )
         {
-            for(attendee in eventData.attending.take(3))
+            for(attendee in eventData.attendeeIds.take(3))
             {
                 Image(
                     painter = painterResource(id = R.drawable.defaultpfp),

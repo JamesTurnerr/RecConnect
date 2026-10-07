@@ -1,19 +1,18 @@
 package com.example.recconnect
 
+import com.google.firebase.firestore.DocumentId
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 data class EventData(
-    val id: String,
+    @DocumentId val id: String,
     val title: String,
     val type: String,
     val location: String,
     val timestamp: Long,
-    val attending: List<String>,
     val description: String,
-    val creatorId: String,
-    val creatorName: String,
+    val creatorUser: String,
     val skillLevel: String,
     val maxSpots: String,
     val attendeeIds: List<String>
@@ -40,10 +39,8 @@ data class EventData(
                     "Run",
                     "Christchurch",
                     1637653200000,
-                    listOf("1", "2"),
                     "",
                     "1",
-                    "Bob",
                     "Easy",
                     "10",
                     listOf("1", "2")
@@ -53,10 +50,8 @@ data class EventData(
                     "Cycling",
                     "Auckland",
                     1637725200000,
-                    listOf("13434", "2333", "3121", "2323232"),
                     "Mountain biking",
                     "1",
-                    "Bob",
                     "Easy",
                     "10",
                     listOf("1", "2")
@@ -66,10 +61,8 @@ data class EventData(
                     "Gym",
                     "Christchurch",
                     1637811600000,
-                    listOf("16767", "2222"),
                     "",
                     "1",
-                    "Bob",
                     "Easy",
                     "10",
                     listOf("1", "2")
@@ -80,10 +73,8 @@ data class EventData(
                     "Hiking",
                     "Christchurch",
                     1637898000000,
-                    listOf("111"),
                     "",
                     "1",
-                    "Bob",
                     "Easy",
                     "10",
                     listOf("1", "2")

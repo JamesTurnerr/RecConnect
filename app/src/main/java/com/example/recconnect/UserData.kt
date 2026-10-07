@@ -1,7 +1,9 @@
 package com.example.recconnect
 
+import com.google.firebase.firestore.DocumentId
+
 data class UserData(
-    val id: String = "",
+    @DocumentId val id: String = "",
     val name: String = "",
     val email: String = "",
     val events: List<String> = emptyList()
