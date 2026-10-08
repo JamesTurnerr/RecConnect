@@ -31,7 +31,7 @@ object Validators {
         else -> null
     }
 
-    /** Login only checks that something was typed; Firebase decides if it's correct. */
+    /** Login only checks that something was typed Firebase decides if it's correct. */
     fun loginPassword(value: String): String? =
         if (value.isEmpty()) "Enter your password" else null
 
