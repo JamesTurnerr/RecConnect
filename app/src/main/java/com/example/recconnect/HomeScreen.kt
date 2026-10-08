@@ -190,6 +190,26 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
             }
         }
 
+        item {
+            Button(
+                onClick = {
+                    NotificationHelper.showNotification(
+                        context,
+                        "Test Notification",
+                        "Someone joined your event 'Soccer Match'!"
+                    )
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Test Notification")
+            }
+        }
+
         // rest of the users joined events
         if (laterJoined.isNotEmpty()) {
             item { Text("Your upcoming events", style = MaterialTheme.typography.titleMedium) }

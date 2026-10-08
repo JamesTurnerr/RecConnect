@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -16,7 +17,7 @@ object NotificationHelper {
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
                 description = CHANNEL_DESCRIPTION
             }
@@ -33,23 +34,24 @@ object NotificationHelper {
                     android.Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
+                Toast.makeText(context, "Notification permission not granted!", Toast.LENGTH_SHORT).show()
                 return
             }
         }
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.rec_connect_logo)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
 
         try {
             with(NotificationManagerCompat.from(context)) {
                 notify(notificationId, builder.build())
             }
-        } catch (e: SecurityException) {
-            // Handle missing permission
+        } catch (e: Exception) {
+            Toast.makeText(context, "Failed to show notification: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 }
