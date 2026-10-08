@@ -296,18 +296,7 @@ fun EventCard(navController: NavController, eventId: String) {
                 Text("Remove Photo")
             }
 
-        } else {
-            //select photo button
-            Button(
-                onClick = {
-                    showPhotoOptions = true
-                },
-                modifier = Modifier.padding(top = 10.dp)
-            ) {
-                Text("Add Photo")
-            }
         }
-
 
 
         if (showPhotoOptions) {
@@ -378,6 +367,16 @@ fun EventCard(navController: NavController, eventId: String) {
         //leave event
         if (eventCardViewModel.isAttending(eventData))
         {
+            if (photoPath == null) {
+                Button(
+                    onClick = {
+                        showPhotoOptions = true
+                    },
+                    modifier = Modifier.padding(top = 10.dp)
+                ) {
+                    Text("Add Photo")
+                }
+            }
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
