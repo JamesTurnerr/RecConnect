@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "66989497028",
+    "project_id": "recconnect-303",
+    "storage_bucket": "recconnect-303.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66989497028:android:73d91a4112c4c2c46f8791",
+        "android_client_info": {
+          "package_name": "com.example.recconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzDzjyJe1z2dMx7dYlcgZAeoDIRjeNf4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
