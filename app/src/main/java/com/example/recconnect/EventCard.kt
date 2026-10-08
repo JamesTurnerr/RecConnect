@@ -275,7 +275,7 @@ fun EventCard(navController: NavController, eventId: String) {
                     .data(photoPath)
                     .memoryCacheKey(photoPath?.absolutePath + "_" + photoPath?.lastModified())
                     .build(),
-                contentDescription = "Event photo",
+                contentDescription = stringResource(R.string.event_photo),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
@@ -291,7 +291,7 @@ fun EventCard(navController: NavController, eventId: String) {
                 },
                 modifier = Modifier.padding(top = 10.dp)
             ) {
-                Text("Remove Photo")
+                Text(stringResource(R.string.remove_photo))
             }
 
         }
@@ -303,10 +303,10 @@ fun EventCard(navController: NavController, eventId: String) {
                     showPhotoOptions = false
                 },
                 title = {
-                    Text("Add Photo")
+                    Text(stringResource(R.string.add_photo))
                 },
                 text = {
-                    Text("How would you like to add a photo?")
+                    Text(stringResource(R.string.add_photo_text))
                 },
                 confirmButton = {
                     TextButton(
@@ -342,7 +342,7 @@ fun EventCard(navController: NavController, eventId: String) {
                             }
                         }
                     ) {
-                        Text("Take Photo")
+                        Text(stringResource(R.string.take_photo))
                     }
                 },
                 dismissButton = {
@@ -352,7 +352,7 @@ fun EventCard(navController: NavController, eventId: String) {
                             galleryLauncher.launch("image/*")
                         }
                     ) {
-                        Text("Select Photo")
+                        Text(stringResource(R.string.select_photo))
                     }
                 }
             )
@@ -373,7 +373,7 @@ fun EventCard(navController: NavController, eventId: String) {
                     },
                     modifier = Modifier.padding(top = 10.dp)
                 ) {
-                    Text("Add Photo")
+                    Text(stringResource(R.string.add_photo))
                 }
             }
             Box(
