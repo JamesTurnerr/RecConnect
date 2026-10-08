@@ -50,6 +50,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun Profile(
@@ -72,11 +73,13 @@ fun Profile(
         viewModel.loadProfile(userHandle)
     }
 
+    val snackbarMessage = stringResource(R.string.profile_updated_successfully)
+
     LaunchedEffect(profileUpdated) {
         if (profileUpdated) {
 
             snackbarHostState.showSnackbar(
-                "Profile updated successfully"
+                snackbarMessage
             )
 
             navController.currentBackStackEntry
@@ -94,10 +97,14 @@ fun Profile(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
+            item {
+                Spacer(modifier = Modifier.height(18.dp))
+            }
 
             item {
                 Box(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
                     IconButton(
                         onClick = {
@@ -106,12 +113,12 @@ fun Profile(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
 
                     Text(
-                        text = "Profile",
+                        text = stringResource(R.string.profile),
                         fontSize = 30.sp,
                         style = MaterialTheme.typography.headlineMedium,
                         textAlign = TextAlign.Center,
@@ -127,7 +134,7 @@ fun Profile(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
-                                contentDescription = "settings"
+                                contentDescription = stringResource(R.string.settings)
                             )
                         }
                     }
@@ -145,7 +152,7 @@ fun Profile(
                         painter = painterResource(
                             id = R.drawable.defaultpfp
                         ),
-                        contentDescription = "Profile Picture",
+                        contentDescription = stringResource(R.string.profile_picture),
                         modifier = Modifier
                             .size(125.dp)
                             .clip(CircleShape)
@@ -158,7 +165,7 @@ fun Profile(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = profile?.name ?: "Loading...",
+                            text = profile?.name ?: stringResource(R.string.loading),
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 2,
@@ -166,7 +173,7 @@ fun Profile(
                         )
 
                         Text(
-                            text = profile?.email ?: "loading",
+                            text = profile?.email ?: stringResource(R.string.loading),
                             fontSize = 18.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -183,7 +190,7 @@ fun Profile(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ModeEdit,
-                                contentDescription = "edit profile"
+                                contentDescription = stringResource(R.string.edit_profile)
                             )
                         }
                     }
@@ -191,12 +198,17 @@ fun Profile(
             }
 
             item {
-                HorizontalDivider(thickness = 3.dp)
+                HorizontalDivider(
+                    thickness = 3.dp,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
             }
 
             item {
                 Text(
-                    text = "activities attending"
+                    text = stringResource(R.string.activities_attending),
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(bottom = 10.dp)
                 )
             }
 
@@ -250,7 +262,7 @@ fun Profile(
         ) { data ->
             Snackbar(
                 snackbarData = data,
-                containerColor = if (data.visuals.message.contains("successfully")) {
+                containerColor = if (data.visuals.message.contains(stringResource(R.string.successfully))) {
                     Color(0xFF4CAF50) // green
                 } else {
                     Color(0xFFF44336) // red
