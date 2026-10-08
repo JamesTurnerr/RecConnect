@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -91,7 +92,7 @@ fun EventsScreen(
         // header
         item(span = { GridItemSpan(maxLineSpan) }) {
             Text(
-                "Events",
+                stringResource(R.string.events_title),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -105,7 +106,7 @@ fun EventsScreen(
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("+ Create an Event")
+                Text(stringResource(R.string.events_create_button))
             }
         }
 
@@ -114,8 +115,8 @@ fun EventsScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("Search") },
-                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
+                label = { Text(stringResource(R.string.events_search)) },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.events_search)) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -132,7 +133,7 @@ fun EventsScreen(
                     FilterChip(
                         selected = selectedType == "All",
                         onClick = { selectedType = "All" },
-                        label = { Text("All") },
+                        label = { Text(stringResource(R.string.events_filter_all)) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.secondary,
                             selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
@@ -144,7 +145,7 @@ fun EventsScreen(
                     FilterChip(
                         selected = selectedType == eventType.key,
                         onClick = { selectedType = eventType.key },
-                        label = { Text(eventType.key) },
+                        label = { Text(typeLabel(eventType.key)) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.secondary,
                             selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
@@ -159,8 +160,8 @@ fun EventsScreen(
         if (filteredEvents.isEmpty()) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
-                    text = if (allEvents.isEmpty()) "No events yet - be the first to list one!"
-                    else "No events match your filters",
+                    text = if (allEvents.isEmpty()) stringResource(R.string.events_empty)
+                    else stringResource(R.string.events_no_match),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -200,7 +201,7 @@ fun EventCard(event: EventData, onViewClick: () -> Unit) {
             ) {
                 Icon(
                     EventTypes.iconFor(event.type),
-                    contentDescription = event.type,
+                    contentDescription = typeLabel(event.type),
                     tint = MaterialTheme.colorScheme.onTertiary,
                     modifier = Modifier.size(48.dp)
                 )
@@ -229,7 +230,7 @@ fun EventCard(event: EventData, onViewClick: () -> Unit) {
             }
 
             Text(
-                text = "${event.attendeeIds.size}/${event.maxSpots} spots filled",
+                text = stringResource(R.string.events_spots, event.attendeeIds.size, event.maxSpots),
                 style = MaterialTheme.typography.bodySmall
             )
 
@@ -239,7 +240,7 @@ fun EventCard(event: EventData, onViewClick: () -> Unit) {
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             ) {
-                Text("View")
+                Text(stringResource(R.string.events_view))
             }
         }
     }

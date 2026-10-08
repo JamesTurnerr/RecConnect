@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.material.icons.filled.SportsVolleyball
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 
 data class EventType(val key: String, val icon: ImageVector)
 
@@ -45,3 +47,36 @@ object EventTypes {
 }
 
 val skillLevels = listOf("All levels", "Beginner", "Intermediate", "Advanced")
+
+// with string resources
+@Composable
+fun typeLabel(key: String): String {
+    return when (key) {
+        "Gym Session" -> stringResource(R.string.type_gym_session)
+        "Run" -> stringResource(R.string.type_run)
+        "Basketball" -> stringResource(R.string.type_basketball)
+        "Football" -> stringResource(R.string.type_football)
+        "Cycling" -> stringResource(R.string.type_cycling)
+        "Rugby" -> stringResource(R.string.type_rugby)
+        "Tennis" -> stringResource(R.string.type_tennis)
+        "Volleyball" -> stringResource(R.string.type_volleyball)
+        "Netball" -> stringResource(R.string.type_netball)
+        "Walk" -> stringResource(R.string.type_walk)
+        "Swimming" -> stringResource(R.string.type_swimming)
+        "Pickleball" -> stringResource(R.string.type_pickleball)
+        "Hiking" -> stringResource(R.string.type_hiking)
+        "Other" -> stringResource(R.string.type_other)
+        else -> key
+    }
+}
+
+@Composable
+fun skillLabel(key: String): String {
+    return when (key) {
+        "All levels" -> stringResource(R.string.skill_all)
+        "Beginner" -> stringResource(R.string.skill_beginner)
+        "Intermediate" -> stringResource(R.string.skill_intermediate)
+        "Advanced" -> stringResource(R.string.skill_advanced)
+        else -> key
+    }
+}
