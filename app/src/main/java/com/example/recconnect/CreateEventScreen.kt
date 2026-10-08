@@ -1,12 +1,17 @@
 package com.example.recconnect
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -14,11 +19,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +46,9 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -46,7 +56,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -63,7 +75,7 @@ fun CreateEventScreen(
     val context = LocalContext.current
     val fillAllMessage = stringResource(R.string.create_fill_all)
     val successMessage = stringResource(R.string.create_success)
-
+    val scope = rememberCoroutineScope()
     var type by rememberSaveable { mutableStateOf("") }
     var title by rememberSaveable { mutableStateOf("") }
     var dateMillis by rememberSaveable { mutableStateOf<Long?>(null) }
@@ -75,6 +87,39 @@ fun CreateEventScreen(
     var maxSpots by rememberSaveable { mutableStateOf("") }
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
     var showTimePicker by rememberSaveable { mutableStateOf(false) }
+    var isLocating by remember { mutableStateOf(false) }
+
+    fun fillCurrentLocation() {
+        isLocating = true
+        scope.launch {
+            try {
+                val address = getCurrentAddress(context)
+                if (address != null) {
+                    location = address
+                }
+                else {
+                    Toast.makeText(context, "Couldn't get location", Toast.LENGTH_SHORT).show()
+                }
+            }
+            catch (e: Exception) {
+                Toast.makeText(context, "Couldn't get location", Toast.LENGTH_SHORT).show()
+            }
+            finally {
+                isLocating = false
+            }
+        }
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { results ->
+        if (results.values.any { it }) {
+            fillCurrentLocation()
+        }
+        else {
+            Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -175,11 +220,43 @@ fun CreateEventScreen(
                 )
             }
 
+            // to pick current location
             item {
                 OutlinedTextField(
                     value = location,
                     onValueChange = { location = it },
-                    label = { Text(stringResource(R.string.create_location)) },
+                    label = { Text("Location") },
+                    trailingIcon = {
+                        if (isLocating) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            IconButton(onClick = {
+                                val hasLocationPermission = listOf(
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                                ).any {
+                                    ContextCompat.checkSelfPermission(context, it) ==
+                                            PackageManager.PERMISSION_GRANTED
+                                }
+
+                                if (hasLocationPermission) {
+                                    fillCurrentLocation()
+                                } else {
+                                    locationPermissionLauncher.launch(
+                                        arrayOf(
+                                            Manifest.permission.ACCESS_FINE_LOCATION,
+                                            Manifest.permission.ACCESS_COARSE_LOCATION
+                                        )
+                                    )
+                                }
+                            }) {
+                                Icon(Icons.Filled.MyLocation, contentDescription = "Use current location")
+                            }
+                        }
+                    },
                     colors = fieldColors,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -295,4 +372,5 @@ fun CreateEventScreen(
             )
         }
     }
+
 }

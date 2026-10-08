@@ -1,8 +1,11 @@
 package com.example.recconnect
 
 import android.app.AlertDialog
-import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,8 +37,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -49,8 +57,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.example.recconnect.viewModels.EventCardViewModel
 import kotlinx.coroutines.launch
+import java.io.File
+import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import coil3.request.ImageRequest
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 
@@ -64,6 +78,76 @@ fun EventCard(navController: NavController, eventId: String) {
     val loadedEvent by eventCardViewModel.eventDetails.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val photoRepository = remember { EventPhotoRepository(context) }
+    var photoPath by remember { mutableStateOf<File?>(null) }
+    var showPhotoOptions by remember { mutableStateOf(false) }
+    var cameraPhotoUri by remember { mutableStateOf<Uri?>(null) }
+
+    LaunchedEffect(eventId) {
+        photoPath = photoRepository.getPhotoFile(eventId)
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+
+        if (uri != null) {
+            scope.launch {
+                photoRepository.savePhoto(eventId, uri)
+                photoPath = photoRepository.getPhotoFile(eventId)
+            }
+        }
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            val uri = cameraPhotoUri
+
+            if (uri != null) {
+                scope.launch {
+                    photoRepository.savePhoto(
+                        eventId = eventId,
+                        sourceUri = uri
+                    )
+
+                    photoPath = photoRepository.getPhotoFile(eventId)
+
+                    try {
+                        File(uri.path ?: "").delete()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    cameraPhotoUri = null
+                }
+            }
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+
+        if (isGranted) {
+            val photoFile = File.createTempFile(
+                "camera_",
+                ".jpg",
+                context.cacheDir
+            )
+
+            val uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                photoFile
+            )
+
+            cameraPhotoUri = uri
+            cameraLauncher.launch(uri)
+        }
+    }
+
 
     val creatorId = loadedEvent?.attendeeIds?.firstOrNull() ?: ""
     val creatorName by produceState("", creatorId) {
@@ -272,6 +356,97 @@ fun EventCard(navController: NavController, eventId: String) {
             }
         }
 
+        //user activity photo
+        if (photoPath != null) {
+
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(photoPath)
+                    .memoryCacheKey(photoPath?.absolutePath + "_" + photoPath?.lastModified())
+                    .build(),
+                contentDescription = stringResource(R.string.event_photo),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .padding(top = 10.dp)
+            )
+
+            Button(
+                onClick = {
+                    scope.launch {
+                        photoRepository.deletePhoto(eventId)
+                        photoPath = null
+                    }
+                },
+                modifier = Modifier.padding(top = 10.dp)
+            ) {
+                Text(stringResource(R.string.remove_photo))
+            }
+
+        }
+
+        // picture source selector
+        if (showPhotoOptions) {
+            AlertDialog(
+                onDismissRequest = {
+                    showPhotoOptions = false
+                },
+                title = {
+                    Text(stringResource(R.string.add_photo))
+                },
+                text = {
+                    Text(stringResource(R.string.add_photo_text))
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showPhotoOptions = false
+
+                            val permission = ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.CAMERA
+                            )
+
+                            if (permission == PackageManager.PERMISSION_GRANTED) {
+
+                                val photoFile = File.createTempFile(
+                                    "camera_",
+                                    ".jpg",
+                                    context.cacheDir
+                                )
+
+                                val uri = FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.fileprovider",
+                                    photoFile
+                                )
+
+                                cameraPhotoUri = uri
+                                cameraLauncher.launch(uri)
+
+                            } else {
+                                cameraPermissionLauncher.launch(
+                                    android.Manifest.permission.CAMERA
+                                )
+                            }
+                        }
+                    ) {
+                        Text(stringResource(R.string.take_photo))
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showPhotoOptions = false
+                            galleryLauncher.launch("image/*")
+                        }
+                    ) {
+                        Text(stringResource(R.string.select_photo))
+                    }
+                }
+            )
+        }
+
         /*
         Dialog box when user clicks join/leave event
         Add to event then redirect to home screen on accept
@@ -279,6 +454,17 @@ fun EventCard(navController: NavController, eventId: String) {
         // leave event
         if (eventCardViewModel.isAttending(eventData))
         {
+            // photo adding only avaliable user is attending event
+            if (photoPath == null) {
+                Button(
+                    onClick = {
+                        showPhotoOptions = true
+                    },
+                    modifier = Modifier.padding(top = 10.dp)
+                ) {
+                    Text(stringResource(R.string.add_photo))
+                }
+            }
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center

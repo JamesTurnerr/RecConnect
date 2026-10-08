@@ -49,11 +49,12 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.firestore)
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation(libs.firebase.auth)
-    implementation("androidx.compose.material:material-icons-core")
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -61,5 +62,4 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
 }
