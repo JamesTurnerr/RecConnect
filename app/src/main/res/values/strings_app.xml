@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_full">Event Full</string>
+
+    <string name="recconnect_logo_description">RecConnect logo</string>
+    <string name="home_next_up">Next up</string>
+    <string name="home_no_joined">You haven\'t joined any events yet</string>
+    <string name="home_create">Create</string>
+    <string name="home_browse">Browse</string>
+    <string name="home_your_upcoming">Your upcoming events</string>
+    <string name="home_this_week">Other events happening this week</string>
+
+    <string name="time_days">in %1$d days</string>
+    <string name="time_tomorrow">tomorrow</string>
+    <string name="time_one_hour">in 1 hour</string>
+    <string name="time_hours">in %1$d hours</string>
+    <string name="time_now">starting now</string>
+    <string name="time_minutes">in %1$d minutes</string>
+
+    <string name="events_title">Events</string>
+    <string name="events_create_button">+ Create an Event</string>
+    <string name="events_search">Search</string>
+    <string name="events_filter_all">All</string>
+    <string name="events_empty">No events yet - be the first to list one!</string>
+    <string name="events_no_match">No events match your filters</string>
+    <string name="events_view">View</string>
+    <string name="events_spots">%1$d/%2$d spots filled</string>
+
+    <string name="create_title">Create Event</string>
+    <string name="create_type">Type</string>
+    <string name="create_field_title">Title</string>
+    <string name="create_date">Date</string>
+    <string name="create_date_icon">Select date</string>
+    <string name="create_time_icon">Select time</string>
+    <string name="create_location">Location</string>
+    <string name="create_max_spots">Max spots</string>
+    <string name="create_skill_level">Skill level</string>
+    <string name="create_description">Description</string>
+    <string name="create_button">Create</string>
+    <string name="create_fill_all">Please fill in all required fields</string>
+    <string name="create_success">Event created!</string>
+
+    <string name="prefs_title">Preferences</string>
+    <string name="prefs_dark_title">Dark mode</string>
+    <string name="prefs_dark_desc">Use a dark colour scheme</string>
+    <string name="prefs_notif_title">Event reminders</string>
+    <string name="prefs_notif_desc">Get notified before your events</string>
+    <string name="prefs_logout">Log out</string>
+
+    <string name="type_gym_session">Gym Session</string>
+    <string name="type_run">Run</string>
+    <string name="type_basketball">Basketball</string>
+    <string name="type_football">Football</string>
+    <string name="type_cycling">Cycling</string>
+    <string name="type_rugby">Rugby</string>
+    <string name="type_tennis">Tennis</string>
+    <string name="type_volleyball">Volleyball</string>
+    <string name="type_netball">Netball</string>
+    <string name="type_walk">Walk</string>
+    <string name="type_swimming">Swimming</string>
+    <string name="type_pickleball">Pickleball</string>
+    <string name="type_hiking">Hiking</string>
+    <string name="type_other">Other</string>
+
+    <string name="skill_all">All levels</string>
+    <string name="skill_beginner">Beginner</string>
+    <string name="skill_intermediate">Intermediate</string>
+    <string name="skill_advanced">Advanced</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_events">Events</string>
+    <string name="nav_profile">Profile</string>
+</resources>

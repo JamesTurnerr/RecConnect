@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -35,7 +36,6 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
-// CURRENTLY ACCESSIBLE FROM THE HOME SCREEN BUT COULD ADD TO PROFILE SCREEN INSTEAD
 @Composable
 fun SettingsScreen(navController: NavController, onLogout: () -> Unit) {
     val context = LocalContext.current
@@ -63,21 +63,21 @@ fun SettingsScreen(navController: NavController, onLogout: () -> Unit) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
             }
-            Text("Preferences", style = MaterialTheme.typography.headlineMedium)
+            Text(stringResource(R.string.prefs_title), style = MaterialTheme.typography.headlineMedium)
         }
 
         SettingRow(
-            title = "Dark mode",
-            description = "Use a dark colour scheme",
+            title = stringResource(R.string.prefs_dark_title),
+            description = stringResource(R.string.prefs_dark_desc),
             checked = darkMode,
             onChange = { save(SettingsKeys.DARK_MODE, it) }
         )
 
         SettingRow(
-            title = "Event reminders",
-            description = "Get notified before your events",
+            title = stringResource(R.string.prefs_notif_title),
+            description = stringResource(R.string.prefs_notif_desc),
             checked = notifications,
             onChange = {
                 save(SettingsKeys.NOTIFICATIONS, it)
@@ -92,7 +92,7 @@ fun SettingsScreen(navController: NavController, onLogout: () -> Unit) {
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Log out")
+            Text(stringResource(R.string.prefs_logout))
         }
     }
 }

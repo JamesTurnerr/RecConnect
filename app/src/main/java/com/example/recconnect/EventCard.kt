@@ -1,5 +1,4 @@
 package com.example.recconnect
-
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -65,6 +64,8 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil3.request.ImageRequest
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun EventCard(navController: NavController, eventId: String) {
@@ -168,8 +169,9 @@ fun EventCard(navController: NavController, eventId: String) {
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // back button and event type image
@@ -208,7 +210,15 @@ fun EventCard(navController: NavController, eventId: String) {
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = creatorId.isNotBlank()) {
+                            navController.navigate("Profile/$creatorId")
+                        }
+                        .padding(4.dp)
+                )
                 {
                     // pfp
                     Image(
@@ -455,8 +465,8 @@ fun EventCard(navController: NavController, eventId: String) {
                 }
             }
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.BottomCenter
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             )
             {
                 val confirmationMessage =
@@ -489,13 +499,14 @@ fun EventCard(navController: NavController, eventId: String) {
         // join event
         else {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.BottomCenter
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             )
             {
                 val confirmationMessage =
                     stringResource(R.string.join_event_confirmation, eventData.title)
                 Button(
+                    enabled = eventData.attendeeIds.size < eventData.maxSpots,
                     modifier = Modifier.width(200.dp).height(67.dp),
                     onClick = {
                         val builder = AlertDialog.Builder(context)
@@ -514,7 +525,10 @@ fun EventCard(navController: NavController, eventId: String) {
                 )
                 {
                     Text(
-                        text = stringResource(R.string.join_event),
+                        text = stringResource(
+                            if (eventData.attendeeIds.size < eventData.maxSpots) R.string.join_event
+                            else R.string.event_full
+                        ),
                         fontSize = 24.sp
                     )
                 }

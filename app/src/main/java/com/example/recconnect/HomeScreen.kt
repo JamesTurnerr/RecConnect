@@ -38,21 +38,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 // turns timestamp into text
+@Composable
 fun timeUntil(timestamp: Long): String {
     val minutes = (timestamp - System.currentTimeMillis()) / 60000
     val hours = minutes / 60
     val days = hours / 24
     return when {
-        days >= 2 -> "in $days days"
-        days == 1L -> "tomorrow"
-        hours == 1L -> "in 1 hour"
-        hours >= 2 -> "in $hours hours"
-        minutes <= 1 -> "starting now"
-        else -> "in $minutes minutes"
+        days >= 2 -> stringResource(R.string.time_days, days)
+        days == 1L ->stringResource(R.string.time_tomorrow)
+        hours == 1L -> stringResource(R.string.time_one_hour)
+        hours >= 2 -> stringResource(R.string.time_hours, hours)
+        minutes <= 1 -> stringResource(R.string.time_now)
+        else -> stringResource(R.string.time_minutes, minutes)
     }
 }
 
@@ -98,14 +100,14 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.rec_connect_logo_transparent),
-                        contentDescription = "RecConnect logo",
+                        contentDescription = stringResource(R.string.recconnect_logo_description),
                         modifier = Modifier.height(160.dp)
                     )
                 }
             }
         }
 
-        item { Text("Next up", style = MaterialTheme.typography.titleMedium) }
+        item { Text(stringResource(R.string.home_next_up), style = MaterialTheme.typography.titleMedium) }
         item {
             if (nextUp == null) {
                 Card(
@@ -120,7 +122,7 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
                             .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("You haven't joined any events yet", style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.home_no_joined), style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             } else {
@@ -173,7 +175,8 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text(" Create")
+                    Spacer(Modifier.width(4.dp))
+                    Text(stringResource(R.string.home_create))
                 }
                 Button(
                     onClick = { navController.navigate("Events") },
@@ -185,14 +188,15 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Filled.CalendarMonth, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text(" Browse")
+                    Spacer(Modifier.width(4.dp))
+                    Text(stringResource(R.string.home_browse))
                 }
             }
         }
 
         // rest of the users joined events
         if (laterJoined.isNotEmpty()) {
-            item { Text("Your upcoming events", style = MaterialTheme.typography.titleMedium) }
+            item { Text(stringResource(R.string.home_your_upcoming), style = MaterialTheme.typography.titleMedium) }
             items(laterJoined) { event ->
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -234,7 +238,7 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
 
         // other events happening this week (scrolls sideways, could change if weird)
         if (thisWeek.isNotEmpty()) {
-            item { Text("Other events happening this week", style = MaterialTheme.typography.titleMedium) }
+            item { Text(stringResource(R.string.home_this_week), style = MaterialTheme.typography.titleMedium) }
             item {
                 LazyRow(
                     contentPadding = PaddingValues(vertical = 4.dp),
