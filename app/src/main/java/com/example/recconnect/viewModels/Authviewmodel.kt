@@ -2,6 +2,7 @@ package com.example.recconnect.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.recconnect.Validators
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -18,7 +19,8 @@ import kotlinx.coroutines.tasks.await
 
 data class AuthUiState(
     val isLoading: Boolean = false,
-    val error: String? = null,
+    val error: String? = null,       // form-level error, shown in a banner
+    val emailError: String? = null,  // server-side email problem, shown under the email field
     // Firebase Auth persists the session itself, so this survives app restarts
     val isLoggedIn: Boolean = Firebase.auth.currentUser != null
 )
@@ -42,20 +44,27 @@ class AuthViewModel : ViewModel() {
         val last = lastName.trim()
         val mail = email.trim().lowercase()
 
-        validate(first, last, mail, password, confirmPassword)?.let { msg ->
-            _uiState.update { it.copy(error = msg) }
+        // Safety net: the screen already blocks invalid input before calling this
+        val problems = listOfNotNull(
+            Validators.name(first, "first name"),
+            Validators.name(last, "last name"),
+            Validators.email(mail),
+            Validators.password(password),
+            Validators.confirmPassword(password, confirmPassword)
+        )
+        if (problems.isNotEmpty()) {
+            _uiState.update { it.copy(error = problems.first()) }
             return
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            _uiState.update { it.copy(isLoading = true, error = null, emailError = null) }
             try {
                 // 1. Create the login (Firebase hashes/stores the password)
                 val result = auth.createUserWithEmailAndPassword(mail, password).await()
                 val user = result.user ?: throw IllegalStateException("No user returned")
 
-                // 2. Create the profile doc in the same "users" collection/shape the team uses,
-                //    using the auth uid as the document id so it's easy to look up later
+                // 2. Create the profile doc in the "users" collection, using the auth uid as the id
                 val profile = hashMapOf(
                     "name" to "$first $last",
                     "email" to mail,
@@ -71,7 +80,26 @@ class AuthViewModel : ViewModel() {
 
                 _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = friendlyMessage(e)) }
+                _uiState.update {
+                    when (e) {
+                        is FirebaseAuthUserCollisionException -> it.copy(
+                            isLoading = false,
+                            emailError = "An account with this email already exists. Try signing in"
+                        )
+                        is FirebaseAuthInvalidCredentialsException -> it.copy(
+                            isLoading = false,
+                            emailError = "Enter a valid email, e.g. name@example.com"
+                        )
+                        is FirebaseAuthWeakPasswordException -> it.copy(
+                            isLoading = false,
+                            error = "That password is too weak. Try a longer or less common one"
+                        )
+                        else -> it.copy(
+                            isLoading = false,
+                            error = "Couldn't create account. Check your connection and try again"
+                        )
+                    }
+                }
             }
         }
     }
@@ -85,7 +113,7 @@ class AuthViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            _uiState.update { it.copy(isLoading = true, error = null, emailError = null) }
             try {
                 auth.signInWithEmailAndPassword(mail, password).await()
                 _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
@@ -107,22 +135,5 @@ class AuthViewModel : ViewModel() {
         _uiState.update { it.copy(isLoggedIn = false) }
     }
 
-    fun clearError() = _uiState.update { it.copy(error = null) }
-
-    private fun validate(
-        first: String, last: String, email: String, password: String, confirm: String
-    ): String? = when {
-        first.isEmpty() || last.isEmpty() -> "Enter your first and last name"
-        !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Enter a valid email address"
-        password.length < 8 -> "Password must be at least 8 characters"
-        password != confirm -> "Passwords don't match"
-        else -> null
-    }
-
-    private fun friendlyMessage(e: Exception): String = when (e) {
-        is FirebaseAuthUserCollisionException -> "An account with that email already exists"
-        is FirebaseAuthWeakPasswordException -> "Password is too weak"
-        is FirebaseAuthInvalidCredentialsException -> "That email address isn't valid"
-        else -> "Couldn't create account. Check your connection and try again"
-    }
+    fun clearError() = _uiState.update { it.copy(error = null, emailError = null) }
 }
