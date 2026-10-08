@@ -87,12 +87,6 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
     ) {
         item {
             Box(modifier = Modifier.fillMaxWidth()) {
-                IconButton(
-                    onClick = { navController.navigate("Settings") },
-                    modifier = Modifier.align(Alignment.TopEnd)
-                ) {
-                    Icon(Icons.Filled.Settings, contentDescription = "Settings")
-                }
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -235,7 +229,7 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
 
         // other events happening this week (scrolls sideways, could change if weird)
         if (thisWeek.isNotEmpty()) {
-            item { Text("Happening this week", style = MaterialTheme.typography.titleMedium) }
+            item { Text("Other events happening this week", style = MaterialTheme.typography.titleMedium) }
             item {
                 LazyRow(
                     contentPadding = PaddingValues(vertical = 4.dp),
