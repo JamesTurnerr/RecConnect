@@ -34,7 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun RegisterScreen(
     onRegistered: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    viewModel: AuthViewModel = viewModel()
+    viewModel: com.example.recconnect.viewModels.AuthViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
 
