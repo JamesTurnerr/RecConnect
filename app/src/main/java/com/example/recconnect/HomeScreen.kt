@@ -32,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,6 +73,11 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
     // events in the next week the user hasn't joined
     val thisWeek = upcoming.filter {
         it.timestamp <= weekFromNow && eventViewModel.currentUserId !in it.attendeeIds
+    }
+
+    LaunchedEffect(Unit) {
+        eventViewModel.loadUserName()
+        eventViewModel.loadEvents()
     }
 
     LazyColumn(
