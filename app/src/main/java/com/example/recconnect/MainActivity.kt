@@ -21,6 +21,8 @@ import com.example.recconnect.ui.theme.RecConnectTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.map
+import com.example.recconnect.viewModels.AuthViewModel
+import com.example.recconnect.viewModels.ProfileViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,7 +95,7 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("eventId") { type = NavType.StringType })
                         ) { entry ->
                             val id = entry.arguments?.getString("eventId") ?: ""
-                            Event(navController, id)
+                            EventCard(navController, id)
                         }
                         composable("Profile") {
                             Profile(

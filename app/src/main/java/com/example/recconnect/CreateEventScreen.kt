@@ -240,7 +240,7 @@ fun CreateEventScreen(
                                 .atTime(hh, mm).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                             eventViewModel.createEvent(
                                 title.trim(), type, location.trim(), timestamp,
-                                description.trim(), skillLevel, maxSpots
+                                description.trim(), skillLevel, maxSpots.toInt()
                             )
                             Toast.makeText(context, "Event created!", Toast.LENGTH_SHORT).show()
                             navController.popBackStack()

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
+import com.example.recconnect.models.EventData
 
 class EventViewModel : ViewModel() {
     private val repository: DatabaseRepository = Firestore()
@@ -52,7 +53,7 @@ class EventViewModel : ViewModel() {
 
     fun createEvent(
         title: String, type: String, location: String, timestamp: Long,
-        description: String, skillLevel: String, maxSpots: String
+        description: String, skillLevel: String, maxSpots: Int
     ) {
         viewModelScope.launch {
             try {

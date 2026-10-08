@@ -51,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.recconnect.models.EventData
 
 @Composable
 fun EventsScreen(
@@ -231,7 +232,7 @@ fun EventCard(event: EventData, onViewClick: () -> Unit) {
             }
 
             Text(
-                text = "${event.attendeeIds.size}/${event.maxSpots.ifBlank { "?" }} spots filled",
+                text = "${event.attendeeIds.size}/${event.maxSpots} spots filled",
                 style = MaterialTheme.typography.bodySmall
             )
 
