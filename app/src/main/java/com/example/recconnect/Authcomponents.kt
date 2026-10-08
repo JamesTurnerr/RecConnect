@@ -51,7 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Page wrapper shared by Login and Register: scrollable, keyboard-aware, brand background. */
+/** Page wrapper */
 @Composable
 fun AuthLayout(content: @Composable ColumnScope.() -> Unit) {
     Column(
@@ -67,7 +67,7 @@ fun AuthLayout(content: @Composable ColumnScope.() -> Unit) {
     )
 }
 
-/** Logo + title + subtitle. Needs res/drawable/rec_connect_logo.png */
+/** Logo + title + subtitle */
 @Composable
 fun AuthHeader(title: String, subtitle: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -94,13 +94,7 @@ fun AuthHeader(title: String, subtitle: String) {
     }
 }
 
-/**
- * Text field with built-in validation display.
- *
- * [error] is the live validation result for the current text. It is only SHOWN once the user
- * has left the field at least once, or after they've pressed the submit button ([showErrors]).
- * That way people aren't yelled at while they're still typing their first character.
- */
+/** Text field with built in validation display. */
 @Composable
 fun AuthTextField(
     value: String,
@@ -176,7 +170,7 @@ private fun ErrorText(message: String) {
     }
 }
 
-/** Form-level error (e.g. wrong password, no network). */
+/** Form level error */
 @Composable
 fun ErrorBanner(message: String) {
     Surface(
