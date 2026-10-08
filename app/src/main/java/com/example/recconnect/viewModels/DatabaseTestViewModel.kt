@@ -1,19 +1,19 @@
-package com.example.recconnect
+package com.example.recconnect.viewModels
 
-import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import com.example.recconnect.DatabaseRepository
+import com.example.recconnect.Firestore
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
+private const val TAG = "RecConnect.DatabaseTestViewModel"
 class DatabaseTestViewModel: ViewModel() {
     val database : DatabaseRepository = Firestore()
-    var deviceUserID = Firebase.auth.currentUser?.uid ?: "1"//default to userID: 1
+
     var name by mutableStateOf("")
         private set
 
@@ -52,14 +52,24 @@ class DatabaseTestViewModel: ViewModel() {
             }
         }
     }
-    fun addUserToEvent()
-    {
-        database.joinEvent(eventIDinput)//existing event id
-    }
-    fun outputUserData() {
+
+    fun addUserToEvent() {
         viewModelScope.launch {
             try {
-                val user = database.getUserById(deviceUserID)
+                database.joinEvent(eventIDinput)//existing event id
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to join event", e)
+            }
+        }
+    }
+    fun outputUserData() {
+        val userId = database.currentUserId ?: run {
+            Log.w(TAG, "No user logged in")
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val user = database.getUserById(userId)
                 Log.d(TAG, "User email: ${user.email}")
                 Log.d(TAG, "User name: ${user.name}")
             } catch (e: Exception) {
@@ -99,13 +109,18 @@ class DatabaseTestViewModel: ViewModel() {
                 1111111111,
                 "A description of the event",
                 "Event skill level",
-                "10"
+                10
             )//placeholder timestamp
         }
     }
-    fun changeAccountName(userID: String, newName: String)
-    {
-        database.changeAccountDetails(newName = newName)
+    fun changeAccountName(userID: String, newName: String) {
+        viewModelScope.launch {
+            try {
+                database.changeAccountDetails(newName = newName)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to change name", e)
+            }
+        }
     }
     fun getEventWithID(eventID:String)
     {

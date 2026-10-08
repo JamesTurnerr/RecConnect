@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditProfile(
     navController: NavController,
-    viewModel: ProfileViewModel,
+    viewModel: com.example.recconnect.viewModels.ProfileViewModel,
     userHandle: String
 ) {
     val profile by viewModel.profile.collectAsState()
