@@ -51,6 +51,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.recconnect.viewModels.EventCardViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun EventCard(navController: NavController, eventId: String) {
@@ -84,8 +86,9 @@ fun EventCard(navController: NavController, eventId: String) {
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // back button and event type image
@@ -277,8 +280,8 @@ fun EventCard(navController: NavController, eventId: String) {
         if (eventCardViewModel.isAttending(eventData))
         {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.BottomCenter
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             )
             {
                 val confirmationMessage =
@@ -311,8 +314,8 @@ fun EventCard(navController: NavController, eventId: String) {
         // join event
         else {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.BottomCenter
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             )
             {
                 val confirmationMessage =
