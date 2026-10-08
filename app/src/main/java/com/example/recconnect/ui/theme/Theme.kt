@@ -1,16 +1,38 @@
 package com.example.recconnect.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-// Light only: the logo PNG has a white background, so a dark theme would show a white box.
-// Dynamic (wallpaper) colour is deliberately NOT used, otherwise Android 12+ ignores the brand red.
-private val RecConnectColors = lightColorScheme(
+private val DarkColorScheme = darkColorScheme(
+    primary = BrandRedLight,
+    onPrimary = Color.Black,
+    primaryContainer = BrandRedDark,
+    onPrimaryContainer = BrandRedLight,
+    secondary = Charcoal,
+    onSecondary = Color.White,
+    secondaryContainer = Warm200,
+    onSecondaryContainer = Charcoal,
+    background = Color(0xFF1C1B1F),
+    onBackground = Color(0xFFE6E1E5),
+    surface = Color(0xFF1C1B1F),
+    onSurface = Color(0xFFE6E1E5),
+    surfaceVariant = Charcoal,
+    onSurfaceVariant = WarmGrey,
+    outline = WarmOutline,
+    error = Color(0xFFF2B8B5),
+    onError = Color(0xFF601410),
+    errorContainer = Color(0xFF8C1D18),
+    onErrorContainer = Color(0xFFF2B8B5)
+)
+
+private val LightColorScheme = lightColorScheme(
     primary = BrandRed,
     onPrimary = Color.White,
     primaryContainer = BrandRedLight,
@@ -39,9 +61,14 @@ private val RecConnectShapes = Shapes(
 )
 
 @Composable
-fun RecConnectTheme(content: @Composable () -> Unit) {
+fun RecConnectTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+
     MaterialTheme(
-        colorScheme = RecConnectColors,
+        colorScheme = colorScheme,
         typography = Typography,   // from your existing Type.kt
         shapes = RecConnectShapes,
         content = content

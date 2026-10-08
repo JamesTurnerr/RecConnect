@@ -20,11 +20,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -37,18 +39,35 @@ import com.example.recconnect.ui.theme.RecConnectTheme
 import com.example.recconnect.viewModels.MainActivityViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.flow.map
+import com.example.recconnect.viewModels.AuthViewModel
+import com.example.recconnect.viewModels.ProfileViewModel
 
 class MainActivity : ComponentActivity() {
-    private val profileViewModel: com.example.recconnect.viewModels.ProfileViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            RecConnectTheme {
+            val context = LocalContext.current
+            val darkMode by context.dataStore.data
+                .map { it[SettingsKeys.DARK_MODE] ?: false }
+                .collectAsState(initial = false)
+
+            RecConnectTheme(darkTheme = darkMode) {
                 val navController = rememberNavController()
                 val route = navController.currentBackStackEntryAsState().value?.destination?.route
+                val eventViewModel: EventViewModel = viewModel()
+                val authViewModel: AuthViewModel = viewModel()
+                val profileViewModel: ProfileViewModel = viewModel()
+
+                val backStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = backStackEntry?.destination?.route
+                val showBottomBar = currentRoute in listOf("Home", "Events", "Profile")
+
+                val startDestination = if (Firebase.auth.currentUser != null) "Home" else "Login"
+
                 Scaffold(
                     topBar = {
                         if (route != "Register" && route != "Login") {
@@ -60,70 +79,70 @@ class MainActivity : ComponentActivity() {
                                 )
                             )
                         }
+                    },
+                    bottomBar = {
+                        if (showBottomBar) BottomNavBar(navController)
                     }
                 ) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        val startDestination = if (Firebase.auth.currentUser != null) "Home" else "Register"
-
-                        NavHost(navController = navController, startDestination = startDestination) {
-                            composable("Register") {
-                                RegisterScreen(
-                                    onRegistered = {
-                                        navController.navigate("Home") { popUpTo("Register") { inclusive = true } }
-                                    },
-                                    onNavigateToLogin = { navController.navigate("Login") }   // replaces the commented-out line
-                                )
-                            }
-
-                            composable("Login") {
-                                LoginScreen(
-                                    onLoggedIn = {
-                                        navController.navigate("Home") { popUpTo("Register") { inclusive = true } }
-                                    },
-                                    onNavigateToRegister = { navController.popBackStack() }
-                                )
-                            }
-                            composable("Home") {
-                                Home(navController = navController)
-                            }
-
-                            composable(
-                                "EventCard/{eventId}",
-                                arguments = listOf(navArgument("eventId") {
-                                    type = NavType.StringType
-                                })
-                            ) { backStackEntry ->
-                                val eventId = backStackEntry.arguments?.getString("eventId")
-                                eventId?.let { EventCard(navController, it) }
-                            }
-
-                            composable("DatabaseTest") {
-                                DatabaseTestScreen(navController = navController)
-                            }
-
-                            composable("Profile/{userId}") { backStackEntry ->
-
-                                val userId = backStackEntry.arguments?.getString("userId")
-                                if (userId != null) {
-                                    Profile(
-                                        navController = navController,
-                                        viewModel = profileViewModel,
-                                        userHandle = userId
-                                    )
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination,
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable("Login") {
+                            LoginScreen(
+                                onLoggedIn = {
+                                    navController.navigate("Home") {
+                                        popUpTo("Login") { inclusive = true }
+                                    }
+                                },
+                                onNavigateToRegister = { navController.navigate("Register") }
+                            )
+                        }
+                        composable("Register") {
+                            RegisterScreen(
+                                onRegistered = {
+                                    navController.navigate("Home") {
+                                        popUpTo("Login") { inclusive = true }
+                                    }
+                                },
+                                onNavigateToLogin = { navController.popBackStack() }
+                            )
+                        }
+                        composable("Home") { HomeScreen(navController, eventViewModel) }
+                        composable("Events") { EventsScreen(navController, eventViewModel) }
+                        composable("createEvent") { CreateEventScreen(navController, eventViewModel) }
+                        composable("Settings") {
+                            SettingsScreen(
+                                navController,
+                                onLogout = {
+                                    authViewModel.logout()
+                                    navController.navigate("Login") {
+                                        popUpTo(0)
+                                    }
                                 }
-                            }
-
-                            composable("EditProfile/{userHandle}") { backStackEntry ->
-
-                                val userHandle =
-                                    backStackEntry.arguments?.getString("userHandle") ?: ""
-
-                                EditProfile(
-                                    navController = navController,
-                                    viewModel = profileViewModel,
-                                    userHandle = userHandle
-                                )
-                            }
+                            )
+                        }
+                        composable(
+                            "Event/{eventId}",
+                            arguments = listOf(navArgument("eventId") { type = NavType.StringType })
+                        ) { entry ->
+                            val id = entry.arguments?.getString("eventId") ?: ""
+                            EventCard(navController, id)
+                        }
+                        composable("Profile") {
+                            Profile(
+                                navController,
+                                profileViewModel,
+                                Firebase.auth.currentUser?.uid ?: ""
+                            )
+                        }
+                        composable(
+                            "EditProfile/{userHandle}",
+                            arguments = listOf(navArgument("userHandle") { type = NavType.StringType })
+                        ) { entry ->
+                            val handle = entry.arguments?.getString("userHandle") ?: ""
+                            EditProfile(navController, profileViewModel, handle)
                         }
                     }
                 }
