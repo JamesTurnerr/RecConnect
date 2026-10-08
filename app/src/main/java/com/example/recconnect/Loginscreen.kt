@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -46,8 +47,8 @@ fun LoginScreen(
 
     AuthLayout {
         AuthHeader(
-            title = "Welcome back",
-            subtitle = "Sign in to find your next workout"
+            title = stringResource(R.string.welcome_back),
+            subtitle = stringResource(R.string.sign_in_subtitle)
         )
 
         // e.g. "Incorrect email or password" / no network
@@ -56,7 +57,7 @@ fun LoginScreen(
         AuthTextField(
             value = email,
             onValueChange = { email = it; viewModel.clearError() },
-            label = "Email",
+            label = stringResource(R.string.email),
             error = emailError,
             showErrors = submitted,
             leadingIcon = Icons.Filled.Email,
@@ -65,7 +66,7 @@ fun LoginScreen(
         AuthTextField(
             value = password,
             onValueChange = { password = it; viewModel.clearError() },
-            label = "Password",
+            label = stringResource(R.string.password),
             error = passwordError,
             showErrors = submitted,
             leadingIcon = Icons.Filled.Lock,
@@ -75,10 +76,10 @@ fun LoginScreen(
         )
 
         Spacer(Modifier.height(4.dp))
-        PrimaryButton(text = "Sign in", onClick = { submit() }, isLoading = state.isLoading)
+        PrimaryButton(text = stringResource(R.string.sign_in), onClick = { submit() }, isLoading = state.isLoading)
 
         TextButton(onClick = onNavigateToRegister) {
-            Text("Don't have an account? Create one")
+            Text(stringResource(R.string.dont_have_account))
         }
     }
 }

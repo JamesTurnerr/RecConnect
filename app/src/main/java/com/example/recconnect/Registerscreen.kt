@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -58,8 +59,8 @@ fun RegisterScreen(
 
     AuthLayout {
         AuthHeader(
-            title = "Create your account",
-            subtitle = "Join RecConnect and find people to train with"
+            title = stringResource(R.string.create_your_account),
+            subtitle = stringResource(R.string.register_subtitle)
         )
 
         state.error?.let { ErrorBanner(it) }
@@ -67,7 +68,7 @@ fun RegisterScreen(
         AuthTextField(
             value = firstName,
             onValueChange = { firstName = it; viewModel.clearError() },
-            label = "First name",
+            label = stringResource(R.string.first_name),
             error = firstNameError,
             showErrors = submitted,
             leadingIcon = Icons.Filled.Person
@@ -75,7 +76,7 @@ fun RegisterScreen(
         AuthTextField(
             value = lastName,
             onValueChange = { lastName = it; viewModel.clearError() },
-            label = "Last name",
+            label = stringResource(R.string.last_name),
             error = lastNameError,
             showErrors = submitted,
             leadingIcon = Icons.Filled.Person
@@ -83,7 +84,7 @@ fun RegisterScreen(
         AuthTextField(
             value = email,
             onValueChange = { email = it; viewModel.clearError() },
-            label = "Email",
+            label = stringResource(R.string.email),
             error = emailError,
             showErrors = submitted,
             leadingIcon = Icons.Filled.Email,
@@ -92,17 +93,17 @@ fun RegisterScreen(
         AuthTextField(
             value = password,
             onValueChange = { password = it; viewModel.clearError() },
-            label = "Password",
+            label = stringResource(R.string.password),
             error = passwordError,
             showErrors = submitted,
             leadingIcon = Icons.Filled.Lock,
             isPassword = true,
-            hint = "At least 8 characters, with a letter and a number"
+            hint = stringResource(R.string.password_hint)
         )
         AuthTextField(
             value = confirm,
             onValueChange = { confirm = it; viewModel.clearError() },
-            label = "Confirm password",
+            label = stringResource(R.string.confirm_password),
             error = confirmError,
             showErrors = submitted,
             leadingIcon = Icons.Filled.Lock,
@@ -112,10 +113,10 @@ fun RegisterScreen(
         )
 
         Spacer(Modifier.height(4.dp))
-        PrimaryButton(text = "Create account", onClick = { submit() }, isLoading = state.isLoading)
+        PrimaryButton(text = stringResource(R.string.create_account), onClick = { submit() }, isLoading = state.isLoading)
 
         TextButton(onClick = onNavigateToLogin) {
-            Text("Already have an account? Sign in")
+            Text(stringResource(R.string.already_have_account))
         }
     }
 }
