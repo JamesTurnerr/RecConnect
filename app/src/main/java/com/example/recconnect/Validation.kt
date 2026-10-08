@@ -1,9 +1,6 @@
 package com.example.recconnect
 
-/**
- * Pure validation rules (no Android/Firebase dependencies, so they're easy to unit test).
- * Each function returns an error message, or null when the value is fine.
- */
+/** validation rules */
 object Validators {
 
     private val EMAIL_REGEX =
@@ -22,7 +19,7 @@ object Validators {
         }
     }
 
-    /** Rules for choosing a new password (register). */
+    /** Rules for choosing a new password */
     fun password(value: String): String? = when {
         value.isEmpty() -> "Enter a password"
         value.length < 8 -> "Use at least 8 characters"

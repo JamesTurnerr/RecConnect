@@ -10,6 +10,13 @@
     <string name="leave_event_confirmation">Are you sure you want to leave %1$s?</string>
     <string name="attendees">Attendees</string>
     <string name="close">Close</string>
+    <string name="back">Back</string>
+    <string name="event_profile_picture">Profile picture</string>
+    <string name="event_by">By %1$s</string>
+    <string name="event_location">Location</string>
+    <string name="event_time">Time</string>
+    <string name="event_spots_icon">Spots</string>
+    <string name="event_spots_filled">%1$d/%2$d spots filled</string>
     <string name="profile">Profile</string>
     <string name="profile_updated_successfully">Profile updated successfully</string>
     <string name="loading">Loading…</string>
