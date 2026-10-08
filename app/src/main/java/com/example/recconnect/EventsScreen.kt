@@ -38,6 +38,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -76,6 +77,10 @@ fun EventsScreen(
                     it.title.contains(searchQuery, ignoreCase = true) ||
                     it.location.contains(searchQuery, ignoreCase = true)
         }
+
+    LaunchedEffect(Unit) {
+        eventViewModel.loadEvents()
+    }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(gridColumns),
@@ -208,14 +213,6 @@ fun EventCard(event: EventData, onViewClick: () -> Unit) {
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(top = 8.dp)
             )
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.Person, contentDescription = null, modifier = Modifier.size(14.dp))
-                Text(
-                    text = " By ${event.creatorName.ifBlank { "Unknown" }}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.DateRange, contentDescription = null, modifier = Modifier.size(14.dp))

@@ -96,11 +96,6 @@ fun HomeScreen(navController: NavController, eventViewModel: EventViewModel) {
                         contentDescription = "RecConnect logo",
                         modifier = Modifier.height(160.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "Hey, ${eventViewModel.currentUserName}!",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
                 }
             }
         }
