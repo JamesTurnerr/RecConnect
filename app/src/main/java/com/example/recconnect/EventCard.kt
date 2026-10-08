@@ -83,12 +83,6 @@ fun EventCard(navController: NavController, eventId: String) {
             scope.launch {
                 photoRepository.savePhoto(eventId, uri)
                 photoPath = photoRepository.getPhotoFile(eventId)
-
-                try {
-                    context.contentResolver.delete(uri, null, null)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
             }
         }
     }
