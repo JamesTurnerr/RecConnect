@@ -14,9 +14,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,6 +30,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recconnect.ui.theme.RecConnectTheme
@@ -45,11 +48,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             RecConnectTheme {
                 val navController = rememberNavController()
+                val route = navController.currentBackStackEntryAsState().value?.destination?.route
                 Scaffold(
                     topBar = {
-                        TopAppBar(
-                            title = { Text("RecConnect") },
-                        )
+                        if (route != "Register" && route != "Login") {
+                            TopAppBar(
+                                title = { Text("RecConnect") },
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        }
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
@@ -148,6 +158,15 @@ fun Home(navController: NavController) {
 
         Button(onClick = { navController.navigate("DatabaseTest") }) {
             Text("Go to database test screen")
+        }
+
+        Button(onClick = {
+            Firebase.auth.signOut()
+            navController.navigate("Register") {
+                popUpTo("Home") { inclusive = true }   // back button can't return to Home
+            }
+        }) {
+            Text("Log out")
         }
 
         Button(onClick = { navController.navigate("Profile/${Firebase.auth.currentUser?.uid}")}) {
