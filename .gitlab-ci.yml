@@ -1,21 +1,21 @@
-image: eclipse-temurin:17-jdk
-
 stages:
   - build
   - test
 
+variables:
+  ANDROID_HOME: "/Users/kaahuz/Library/Android/sdk"
+  ANDROID_SDK_ROOT: "/Users/kaahuz/Library/Android/sdk"
+
 before_script:
   - chmod +x ./gradlew
+  - export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools:$PATH"
 
 build:
   stage: build
   script:
     - ./gradlew assembleDebug
-  artifacts:
-    paths:
-      - app/build/outputs/apk/debug/
 
 test:
   stage: test
   script:
-    - ./gradlew test
+    - ./gradlew testt
