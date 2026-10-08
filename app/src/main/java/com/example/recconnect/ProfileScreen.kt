@@ -193,7 +193,7 @@ fun Profile(
 
             items(profile?.events ?: emptyList()) { event ->
                 Text(
-                    text = event.id,
+                    text = event,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }

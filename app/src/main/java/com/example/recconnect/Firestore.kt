@@ -36,16 +36,17 @@ class Firestore : DatabaseRepository {
             ?: emptyList()
     )
 
-    private fun DocumentSnapshot.getReferences(field: String): List<DocumentReference> =
+    private fun DocumentSnapshot.getReferenceIds(field: String): List<String> =
         (get(field) as? List<*>)
             ?.filterIsInstance<DocumentReference>()
+            ?.map { it.id }
             ?: emptyList()
 
     private fun DocumentSnapshot.toUserData(): UserData = UserData(
         id = id,
         name = getString("name") ?: "",
         email = getString("email") ?: "",
-        events = getReferences("events")
+        events = getReferenceIds("events")
     )
 
 
@@ -90,7 +91,7 @@ class Firestore : DatabaseRepository {
     }
 
     override suspend fun getJoinedEventIDs(userID: String): List<String> {
-        return getUserById(userID).events.map { it.id }
+        return getUserById(userID).events
     }
 
     override suspend fun getAllEvents(): List<EventData> {
@@ -104,12 +105,12 @@ class Firestore : DatabaseRepository {
     }
 
     override suspend fun createEvent(title: String,
-         type: String,
-         location: String,
-         timestamp: Long,
-         description: String,
-         skillLevel: String,
-         maxSpots: Int
+                                     type: String,
+                                     location: String,
+                                     timestamp: Long,
+                                     description: String,
+                                     skillLevel: String,
+                                     maxSpots: Int
     ) {
         val event = hashMapOf(
             "title" to title,
@@ -170,6 +171,7 @@ class Firestore : DatabaseRepository {
         {
             throw NoSuchElementException("$userID user not found")
         }
+
     }
 
     override suspend fun getEventById(eventID: String): EventData {
