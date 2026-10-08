@@ -31,9 +31,17 @@ interface DatabaseRepository {
     suspend fun getJoinedEventIDs(userID: String):List<String>
 
     /**
+     * Get a list of event objects that the user has been added to
+     * @param userID The ID of the user whose events we want to get
+     * @return List of joined event objects
+     */
+    suspend fun getJoinedEventObjects(userID: String): List<EventData>
+
+    /**
      * Get a list of event instances of all currently available events
      * @return List of all event instances
      */
+
     suspend fun getAllEvents():List<EventData>
 
     /**
