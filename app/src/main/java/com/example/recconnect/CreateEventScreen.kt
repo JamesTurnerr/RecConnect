@@ -46,12 +46,14 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -71,8 +73,9 @@ fun CreateEventScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val fillAllMessage = stringResource(R.string.create_fill_all)
+    val successMessage = stringResource(R.string.create_success)
     val scope = rememberCoroutineScope()
-
     var type by rememberSaveable { mutableStateOf("") }
     var title by rememberSaveable { mutableStateOf("") }
     var dateMillis by rememberSaveable { mutableStateOf<Long?>(null) }
@@ -137,10 +140,10 @@ fun CreateEventScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text("Create Event", style = MaterialTheme.typography.headlineMedium) },
+                title = { Text(stringResource(R.string.create_title), style = MaterialTheme.typography.headlineMedium) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -158,13 +161,13 @@ fun CreateEventScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Text("Type", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.create_type), style = MaterialTheme.typography.titleMedium)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(EventTypes.type) { eventType ->
                         FilterChip(
                             selected = type == eventType.key,
                             onClick = { type = eventType.key },
-                            label = { Text(eventType.key) },
+                            label = { Text(typeLabel(eventType.key)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 containerColor = MaterialTheme.colorScheme.surface,
                                 selectedContainerColor = MaterialTheme.colorScheme.secondary,
@@ -179,7 +182,7 @@ fun CreateEventScreen(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Title") },
+                    label = { Text(stringResource(R.string.create_field_title)) },
                     colors = fieldColors,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -190,10 +193,10 @@ fun CreateEventScreen(
                     value = dateText,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Date") },
+                    label = { Text(stringResource(R.string.create_date)) },
                     trailingIcon = {
                         IconButton(onClick = { showDatePicker = true }) {
-                            Icon(Icons.Filled.DateRange, contentDescription = "Select date")
+                            Icon(Icons.Filled.DateRange, contentDescription = stringResource(R.string.create_date_icon))
                         }
                     },
                     colors = fieldColors,
@@ -206,10 +209,10 @@ fun CreateEventScreen(
                     value = timeText,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Time") },
+                    label = { Text(stringResource(R.string.event_time)) },
                     trailingIcon = {
                         IconButton(onClick = { showTimePicker = true }) {
-                            Icon(Icons.Filled.Schedule, contentDescription = "Select time")
+                            Icon(Icons.Filled.Schedule, contentDescription = stringResource(R.string.create_time_icon))
                         }
                     },
                     colors = fieldColors,
@@ -263,7 +266,7 @@ fun CreateEventScreen(
                 OutlinedTextField(
                     value = maxSpots,
                     onValueChange = { maxSpots = it.filter { c -> c.isDigit() } },
-                    label = { Text("Max spots") },
+                    label = { Text(stringResource(R.string.create_max_spots)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     colors = fieldColors,
@@ -272,13 +275,13 @@ fun CreateEventScreen(
             }
 
             item {
-                Text("Skill level", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.create_skill_level), style = MaterialTheme.typography.titleMedium)
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(skillLevels) { level ->
                         FilterChip(
                             selected = skillLevel == level,
                             onClick = { skillLevel = level },
-                            label = { Text(level) },
+                            label = { Text(skillLabel(level)) },
                             colors = FilterChipDefaults.filterChipColors(
                                 containerColor = MaterialTheme.colorScheme.surface,
                                 selectedContainerColor = MaterialTheme.colorScheme.secondary,
@@ -293,7 +296,7 @@ fun CreateEventScreen(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description") },
+                    label = { Text(stringResource(R.string.create_description)) },
                     colors = fieldColors,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -310,7 +313,7 @@ fun CreateEventScreen(
                         if (type.isBlank() || title.isBlank() || d == null || hh == null ||
                             mm == null || location.isBlank() || maxSpots.isBlank()
                         ) {
-                            Toast.makeText(context, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, fillAllMessage, Toast.LENGTH_SHORT).show()
                         } else {
                             // date and time as one timestamp
                             val timestamp = Instant.ofEpochMilli(d).atZone(ZoneOffset.UTC).toLocalDate()
@@ -319,14 +322,14 @@ fun CreateEventScreen(
                                 title.trim(), type, location.trim(), timestamp,
                                 description.trim(), skillLevel, maxSpots.toInt()
                             )
-                            Toast.makeText(context, "Event created!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
                             navController.popBackStack()
                         }
                     },
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Create")
+                    Text(stringResource(R.string.create_button))
                 }
             }
         }
@@ -340,10 +343,10 @@ fun CreateEventScreen(
                     TextButton(onClick = {
                         dateMillis = datePickerState.selectedDateMillis
                         showDatePicker = false
-                    }) { Text("OK") }
+                    }) { Text(stringResource(R.string.ok)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+                    TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.cancel)) }
                 }
             ) {
                 DatePicker(state = datePickerState)
@@ -360,10 +363,10 @@ fun CreateEventScreen(
                         hour = timeState.hour
                         minute = timeState.minute
                         showTimePicker = false
-                    }) { Text("OK") }
+                    }) { Text(stringResource(R.string.ok)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
+                    TextButton(onClick = { showTimePicker = false }) { Text(stringResource(R.string.cancel)) }
                 },
                 text = { TimePicker(state = timeState) }
             )

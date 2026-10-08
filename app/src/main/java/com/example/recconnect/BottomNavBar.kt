@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -43,7 +44,7 @@ fun BottomNavBar(navController: NavController) {
                         modifier = Modifier.size(32.dp)
                     )
                 }
-                Text("Home", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.nav_home), style = MaterialTheme.typography.labelMedium)
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 IconButton(onClick = { navController.navigate("Events") }) {
@@ -54,7 +55,7 @@ fun BottomNavBar(navController: NavController) {
                         modifier = Modifier.size(32.dp)
                     )
                 }
-                Text("Events", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.nav_events), style = MaterialTheme.typography.labelMedium)
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 IconButton(onClick = { navController.navigate("Profile") }) {
@@ -65,7 +66,7 @@ fun BottomNavBar(navController: NavController) {
                         modifier = Modifier.size(32.dp)
                     )
                 }
-                Text("Profile", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.nav_profile), style = MaterialTheme.typography.labelMedium)
             }
         }
     }
