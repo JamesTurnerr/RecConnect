@@ -48,7 +48,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -72,6 +71,8 @@ fun CreateEventScreen(
     eventViewModel: EventViewModel,
     modifier: Modifier = Modifier
 ) {
+    val noLocationMessage = stringResource(R.string.no_event_location)
+    val permissionDeniedMessage = stringResource(R.string.permission_denied)
     val context = LocalContext.current
     val fillAllMessage = stringResource(R.string.create_fill_all)
     val successMessage = stringResource(R.string.create_success)
@@ -98,11 +99,11 @@ fun CreateEventScreen(
                     location = address
                 }
                 else {
-                    Toast.makeText(context, "Couldn't get location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, noLocationMessage, Toast.LENGTH_SHORT).show()
                 }
             }
             catch (e: Exception) {
-                Toast.makeText(context, "Couldn't get location", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, noLocationMessage, Toast.LENGTH_SHORT).show()
             }
             finally {
                 isLocating = false
@@ -117,7 +118,7 @@ fun CreateEventScreen(
             fillCurrentLocation()
         }
         else {
-            Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, permissionDeniedMessage, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -225,7 +226,7 @@ fun CreateEventScreen(
                 OutlinedTextField(
                     value = location,
                     onValueChange = { location = it },
-                    label = { Text("Location") },
+                    label = { Text(stringResource(R.string.create_location)) },
                     trailingIcon = {
                         if (isLocating) {
                             CircularProgressIndicator(
@@ -253,7 +254,7 @@ fun CreateEventScreen(
                                     )
                                 }
                             }) {
-                                Icon(Icons.Filled.MyLocation, contentDescription = "Use current location")
+                                Icon(Icons.Filled.MyLocation, contentDescription = stringResource(R.string.create_use_location))
                             }
                         }
                     },
