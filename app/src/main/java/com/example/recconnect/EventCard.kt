@@ -1,7 +1,10 @@
 package com.example.recconnect
 
 import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,13 +19,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +63,17 @@ fun EventCard(navController: NavController, eventId: String) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
+    val creatorId = loadedEvent?.attendeeIds?.firstOrNull() ?: ""
+    val creatorName by produceState("", creatorId) {
+        if (creatorId.isNotBlank()) {
+            value = try {
+                eventCardViewModel.getAttendeesById(listOf(creatorId)).firstOrNull() ?: ""
+            } catch (e: Exception) {
+                ""
+            }
+        }
+    }
+
     val eventData = loadedEvent
     if (eventData == null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -61,132 +85,187 @@ fun EventCard(navController: NavController, eventId: String) {
     Column(
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            modifier = Modifier
-        )
-        {
-            Image(
-                painter = painterResource(id = R.drawable.defaultpfp),
-                contentDescription = "Profile Picture",
-                modifier = Modifier.size(40.dp).clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = eventData.title, style = MaterialTheme.typography.headlineMedium, fontSize = 36.sp)
-        }
-
-        HorizontalDivider(
+        // back button and event type image
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-        )
-
-        //Location
-        Row(
-            modifier = Modifier
-        )
-        {
-            Image(
-                painter = painterResource(id = R.drawable.location_icon),
-                contentDescription = "Location Icon",
-                modifier = Modifier.size(28.dp).clip(CircleShape)
-            )
-            Text(
-                text = eventData.location,
-                fontSize = 28.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        //Timestamp
-        Row(
-            modifier = Modifier
-        )
-        {
-            Image(
-                painter = painterResource(id = R.drawable.clock_icon),
-                contentDescription = "Clock Icon",
-                modifier = Modifier.size(32.dp).clip(CircleShape)
-            )
-            Text(
-                text = eventData.readableTime(),
-                fontSize = 28.sp
+                .height(100.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.primary)
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription =stringResource(R.string.back),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+            Icon(
+                EventTypes.iconFor(eventData.type),
+                contentDescription = eventData.type,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(56.dp).align(Alignment.Center)
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Card(
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically)
+                {
+                    // pfp
+                    Image(
+                        painter = painterResource(id = R.drawable.defaultpfp),
+                        contentDescription = stringResource(R.string.event_profile_picture),
+                        modifier = Modifier.size(40.dp).clip(CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    // creator name
+                    Text(
+                        text = if (creatorName.isNotBlank()) stringResource(R.string.event_by, creatorName) else "",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
 
-        //Attendees
-        val attendeesString = stringResource(R.string.attendees)
-        val closeString = stringResource(R.string.close)
-        Text(
-            text = stringResource(R.string.attending),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy((-14).dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .clickable(enabled = eventData.attendeeIds.isNotEmpty()) {
-                    scope.launch {
-                        val names = eventCardViewModel.getAttendeesById(eventData.attendeeIds)
+                // title
+                Text(text = eventData.title, style = MaterialTheme.typography.titleLarge)
 
-                        AlertDialog.Builder(context)
-                            .setTitle(attendeesString)
-                            .setItems(names.toTypedArray()) { _, which ->
-                                val userId = eventData.attendeeIds[which]
-                                navController.navigate("Profile/$userId")
-                            }
-                            .setPositiveButton(closeString) { dialog, _ -> dialog.dismiss() }
-                            .show()
+                // event type and skill level
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.secondary)
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                    ) {
+                        Text(eventData.type, color = MaterialTheme.colorScheme.onSecondary)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.primary)
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                    ) {
+                        Text(eventData.skillLevel, color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
-                .padding(4.dp)
-        )
-        {
-            for(attendee in eventData.attendeeIds.take(3))
-            {
-                Image(
-                    painter = painterResource(id = R.drawable.defaultpfp),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier.size(28.dp).clip(CircleShape)
-                )
-            }
 
-            if(eventData.attendeeIds.size > 3)
-            {
-                Spacer(Modifier.width(30.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+                // location
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        val uri = Uri.parse("geo:0,0?q=" + Uri.encode(eventData.location))
+                        context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    }
+                ) {
+                    Icon(Icons.Filled.LocationOn, contentDescription = stringResource(R.string.event_location), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = eventData.location, style = MaterialTheme.typography.bodyLarge)
+                }
+
+                // timestamp
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                )
+                {
+                    Icon(Icons.Filled.Schedule, contentDescription = stringResource(R.string.event_time), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = eventData.readableTime(), style = MaterialTheme.typography.bodyLarge)
+                }
+
+                // max spots
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Filled.Group, contentDescription = stringResource(R.string.event_spots_icon), tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.event_spots_filled, eventData.attendeeIds.size, eventData.maxSpots),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+
+                // attendees
+                val attendeesString = stringResource(R.string.attendees)
+                val closeString = stringResource(R.string.close)
                 Text(
-                    text = pluralStringResource(R.plurals.others_attending, eventData.attendeeIds.size - 3, eventData.attendeeIds.size - 3),
+                    text = stringResource(R.string.attending),
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
                 )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy((-14).dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(enabled = eventData.attendeeIds.isNotEmpty()) {
+                            scope.launch {
+                                val names = eventCardViewModel.getAttendeesById(eventData.attendeeIds)
+
+                                AlertDialog.Builder(context)
+                                    .setTitle(attendeesString)
+                                    .setItems(names.toTypedArray()) { _, which ->
+                                        val userId = eventData.attendeeIds[which]
+                                        navController.navigate("Profile/$userId")
+                                    }
+                                    .setPositiveButton(closeString) { dialog, _ -> dialog.dismiss() }
+                                    .show()
+                            }
+                        }
+                        .padding(4.dp)
+                )
+                {
+                    for(attendee in eventData.attendeeIds.take(3))
+                    {
+                        Image(
+                            painter = painterResource(id = R.drawable.defaultpfp),
+                            contentDescription = stringResource(R.string.event_profile_picture),
+                            modifier = Modifier.size(28.dp).clip(CircleShape)
+                        )
+                    }
+
+                    if(eventData.attendeeIds.size > 3)
+                    {
+                        Spacer(Modifier.width(30.dp))
+                        Text(
+                            text = pluralStringResource(R.plurals.others_attending, eventData.attendeeIds.size - 3, eventData.attendeeIds.size - 3),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
+                        )
+                    }
+                }
+
+                // description
+                if(eventData.description != "") {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+                    Text(
+                        text = stringResource(R.string.description, eventData.description),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
-
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        //Description
-        if(eventData.description != "")
-        {
-            Text(
-                text = stringResource(R.string.description, eventData.description),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
-            )
         }
 
         /*
         Dialog box when user clicks join/leave event
         Add to event then redirect to home screen on accept
          */
-        //leave event
+        // leave event
         if (eventCardViewModel.isAttending(eventData))
         {
             Box(
@@ -221,7 +300,7 @@ fun EventCard(navController: NavController, eventId: String) {
                 }
             }
         }
-        //join event
+        // join event
         else {
             Box(
                 modifier = Modifier.fillMaxSize(),

@@ -182,6 +182,7 @@ fun EventsScreen(
 @Composable
 fun EventCard(event: EventData, onViewClick: () -> Unit) {
     Card(
+        onClick = onViewClick,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
         shape = RoundedCornerShape(8.dp),
