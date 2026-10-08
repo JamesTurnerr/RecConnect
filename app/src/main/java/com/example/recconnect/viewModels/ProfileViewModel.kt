@@ -1,17 +1,19 @@
-package com.example.recconnect
+package com.example.recconnect.viewModels
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.example.recconnect.models.UserData
 import kotlinx.coroutines.launch
 
-class ProfileViewModel : ViewModel() {
+class ProfileViewModel : androidx.lifecycle.ViewModel() {
 
-    private val repository: DatabaseRepository = Firestore()
+    private val repository: com.example.recconnect.DatabaseRepository =
+        _root_ide_package_.com.example.recconnect.Firestore()
 
-    private val _profile = MutableStateFlow<UserData?>(null)
-    val profile: StateFlow<UserData?> = _profile
+    private val _profile =
+        _root_ide_package_.kotlinx.coroutines.flow.MutableStateFlow<UserData?>(
+            null
+        )
+    val profile: kotlinx.coroutines.flow.StateFlow<UserData?> = _profile
 
     fun loadProfile(userHandle: String) {
         viewModelScope.launch {
