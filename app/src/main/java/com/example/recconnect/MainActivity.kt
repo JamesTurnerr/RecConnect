@@ -6,10 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,7 +18,6 @@ import androidx.navigation.navArgument
 import com.example.recconnect.ui.theme.RecConnectTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.flow.map
 import com.example.recconnect.viewModels.AuthViewModel
 import com.example.recconnect.viewModels.ProfileViewModel
 
@@ -29,12 +26,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val context = LocalContext.current
-            val darkMode by context.dataStore.data
-                .map { it[SettingsKeys.DARK_MODE] ?: false }
-                .collectAsState(initial = false)
+            //val context = LocalContext.current
+            //val darkMode by context.dataStore.data
+            //    .map { it[SettingsKeys.DARK_MODE] ?: false }
+            //    .collectAsState(initial = false)
 
-            RecConnectTheme(darkTheme = darkMode) {
+            RecConnectTheme {
                 val navController = rememberNavController()
                 val eventViewModel: EventViewModel = viewModel()
                 val authViewModel: AuthViewModel = viewModel()
@@ -103,6 +100,13 @@ class MainActivity : ComponentActivity() {
                                 profileViewModel,
                                 Firebase.auth.currentUser?.uid ?: ""
                             )
+                        }
+                        composable(
+                            "Profile/{userHandle}",
+                            arguments = listOf(navArgument("userHandle") { type = NavType.StringType })
+                        ) { entry ->
+                            val handle = entry.arguments?.getString("userHandle") ?: ""
+                            Profile(navController, profileViewModel, handle)
                         }
                         composable(
                             "EditProfile/{userHandle}",
