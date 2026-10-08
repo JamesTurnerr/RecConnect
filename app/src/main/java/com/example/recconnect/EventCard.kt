@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,7 +53,6 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil3.request.ImageRequest
-import java.util.jar.Manifest
 
 @Composable
 fun EventCard(navController: NavController, eventId: String) {
@@ -298,7 +296,7 @@ fun EventCard(navController: NavController, eventId: String) {
 
         }
 
-
+        // picture source selector
         if (showPhotoOptions) {
             AlertDialog(
                 onDismissRequest = {
@@ -367,6 +365,7 @@ fun EventCard(navController: NavController, eventId: String) {
         //leave event
         if (eventCardViewModel.isAttending(eventData))
         {
+            // photo adding only avaliable user is attending event
             if (photoPath == null) {
                 Button(
                     onClick = {
