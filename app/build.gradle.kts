@@ -51,7 +51,6 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.auth)
     implementation("androidx.compose.material:material-icons-core")
     implementation(libs.androidx.compose.material.icons.extended)
