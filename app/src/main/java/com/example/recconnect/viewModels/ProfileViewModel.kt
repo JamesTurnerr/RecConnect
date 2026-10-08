@@ -1,23 +1,39 @@
 package com.example.recconnect.viewModels
 
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.recconnect.DatabaseRepository
+import com.example.recconnect.Firestore
+import com.example.recconnect.models.EventData
 import com.example.recconnect.models.UserData
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ProfileViewModel : androidx.lifecycle.ViewModel() {
+private const val TAG = "RecConnect.ProfileViewModel"
+class ProfileViewModel : ViewModel() {
 
-    private val repository: com.example.recconnect.DatabaseRepository =
-        _root_ide_package_.com.example.recconnect.Firestore()
+    private val repository: DatabaseRepository = Firestore()
 
     private val _profile =
-        _root_ide_package_.kotlinx.coroutines.flow.MutableStateFlow<UserData?>(
-            null
-        )
-    val profile: kotlinx.coroutines.flow.StateFlow<UserData?> = _profile
+        MutableStateFlow<UserData?>(null)
+
+    private val _events = MutableStateFlow<List<EventData>>(emptyList())
+    val events: StateFlow<List<EventData>> = _events.asStateFlow()
+    val profile: StateFlow<UserData?> = _profile
 
     fun loadProfile(userHandle: String) {
+        _profile.value = null
+        _events.value = emptyList()
         viewModelScope.launch {
-            _profile.value = repository.getUserById(userHandle)
+            try {
+                _profile.value = repository.getUserById(userHandle)
+                _events.value = repository.getJoinedEventObjects(userHandle)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to load profile for $userHandle", e)
+            }
         }
     }
 

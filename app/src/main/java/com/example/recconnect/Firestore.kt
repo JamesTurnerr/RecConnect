@@ -94,6 +94,17 @@ class Firestore : DatabaseRepository {
         return getUserById(userID).events
     }
 
+    override suspend fun getJoinedEventObjects(userID: String): List<EventData> {
+        val userRef = db.collection("users").document(userID)
+        return db.collection("events")
+            .whereArrayContains("attendeeIds", userRef)
+            .get()
+            .await()
+            .documents
+            .map { it.toEventData() }
+            .sortedBy { it.timestamp }
+    }
+
     override suspend fun getAllEvents(): List<EventData> {
         return try {
             val allEvents = db.collection("events").get().await()
